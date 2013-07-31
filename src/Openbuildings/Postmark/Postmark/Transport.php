@@ -67,17 +67,6 @@ class Postmark_Transport implements \Swift_Transport {
 	}
 
 	/**
-	 * @return array
-	 */
-	protected function headers() {
-		return array(
-			'Accept: application/json',
-			'Content-Type: application/json',
-			'X-Postmark-Server-Token: ' . $this->postmark_api_token
-		);
-	}
-	
-	/**
 	 * @param Swift_Mime_Message $message
 	 * @param array $failed_recipients
 	 * @return int
@@ -149,6 +138,7 @@ class Postmark_Transport implements \Swift_Transport {
   
 	public function registerPlugin(\Swift_Events_EventListener $plugin) 
 	{
-		// TODO
+		throw new \Exception('Postmark Transport does not support swiftmailer plugins');
+		
 	} 
 }

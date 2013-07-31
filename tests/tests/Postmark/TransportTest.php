@@ -38,6 +38,9 @@ class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
 			->with($this->equalTo(array(
 				'From' => 'test12@example.com',
 				'To' => 'test13@example.com',
+				'Cc' => 'test14@example.com,test15@example.com',
+				'Bcc' => 'test16@example.com,test17@example.com',
+				'ReplyTo' => 'test18@example.com',
 				'Subject' => 'Test Big',
 				'TextBody' => 'Text Part',
 				'HtmlBody' => 'HTML Part',
@@ -71,12 +74,21 @@ class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
 		$message = Swift_Message::newInstance($transport);
 
 		$message->setFrom('test12@example.com');
-		$message->setTo(array('test13@example.com'));
+		$message->setTo('test13@example.com');
+		$message->setReplyTo('test18@example.com');
 		$message->setSubject('Test Big');
+		$message->setCc(array('test14@example.com', 'test15@example.com'));
+		$message->setBcc(array('test16@example.com', 'test17@example.com'));
 		$message->addPart('HTML Part', 'text/html');
 		$message->addPart('Text Part', 'text/plain');
 		$message->attach(Swift_Attachment::fromPath(__DIR__.'/../../test_data/logo_black.png'));
 
 		$mailer->send($message);
+
+		$transport->stop();
+		
+		$this->setExpectedException('Exception');
+
+		$transport->registerPlugin($this->getMock('Swift_Events_EventListener'));
 	}
 }
