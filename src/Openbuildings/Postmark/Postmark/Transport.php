@@ -142,14 +142,7 @@ class Postmark_Transport implements \Swift_Transport {
 			}
 		}
 
-		try 
-		{
-			$this->api()->send($data);
-		} 
-		catch (Exception $e) 
-		{
-			throw new \Swift_TransportException($e->getMessage());
-		}
+		$this->api()->send($data);
 
 		return 1;
 	}
