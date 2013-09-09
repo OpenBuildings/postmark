@@ -1,16 +1,17 @@
 <?php
 
-use Openbuildings\Postmark\Postmark_Transport;
+use Openbuildings\Postmark\Swift_PostmarkTransport;
 
 /**
- * @group   api
+ * @group   swift.postmark-transport
  */
-class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
+class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase {
 
 	public function test_send()
 	{
-		$transport = Postmark_Transport::newInstance('POSTMARK_API_TEST');
-
+		$transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
+		$this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->api());
+		
 		$api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
 		$transport->api($api);
 		$mailer = Swift_Mailer::newInstance($transport);
@@ -53,7 +54,7 @@ class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
 				)
 			)));
 
-		$message = Swift_Message::newInstance($transport);
+		$message = Swift_Message::newInstance();
 
 		$message->setFrom('test@example.com');
 		$message->setTo('test2@example.com');
@@ -62,7 +63,7 @@ class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
 
 		$mailer->send($message);
 
-		$message = Swift_Message::newInstance($transport);
+		$message = Swift_Message::newInstance();
 
 		$message->setFrom('test@example.com');
 		$message->setTo(array('test2@example.com', 'test3@example.com'));
@@ -71,7 +72,7 @@ class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
 
 		$mailer->send($message);
 
-		$message = Swift_Message::newInstance($transport);
+		$message = Swift_Message::newInstance();
 
 		$message->setFrom('test12@example.com');
 		$message->setTo('test13@example.com');
@@ -87,8 +88,6 @@ class Postmark_TransportTest extends PHPUnit_Framework_TestCase {
 
 		$transport->stop();
 		
-		$this->setExpectedException('Exception');
-
 		$transport->registerPlugin($this->getMock('Swift_Events_EventListener'));
 	}
 }

@@ -5,20 +5,19 @@ namespace Openbuildings\Postmark;
 /**
  * Class for manupulating a server
  *
- * @author     Ivan Kerin
- * @copyright  (c) 2011-2013 Despark Ltd.
- * @license    http://www.opensource.org/licenses/isc-license.txt
+ * @package    openbuildings\postmark
+ * @author     Ivan Kerin <ikerin@gmail.com>
+ * @copyright  (c) 2013 OpenBuildings Ltd.
+ * @license    http://spdx.org/licenses/BSD-3-Clause
  */
-class Postmark_Transport implements \Swift_Transport {
+class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 	
 	protected $_api;
+	protected $_eventDispatcher;
 
-	public function __construct($token = NULL) 
+	public function __construct(\Swift_Events_EventDispatcher $eventDispatcher)
 	{
-		if ($token) 
-		{
-			$this->api(new Api($token));
-		}
+		$this->_eventDispatcher = $eventDispatcher;
 	}
 
 	public function api(Api $api = NULL)
@@ -29,11 +28,6 @@ class Postmark_Transport implements \Swift_Transport {
 			return $this;
 		}
 		return $this->_api;
-	}
-	
-	public static function newInstance($token) 
-	{
-		return new Postmark_Transport($token);
 	}
 	
 	public function isStarted() 
@@ -59,9 +53,12 @@ class Postmark_Transport implements \Swift_Transport {
 	protected function getMIMEPart(\Swift_Mime_Message $message, $mime_type) 
 	{
 		$part_content = NULL;
-		foreach ($message->getChildren() as $part) {
+		foreach ($message->getChildren() as $part) 
+		{
 			if (strpos($part->getContentType(), $mime_type) === 0)
+			{
 				$part_content = $part;
+			}
 		}
 		return $part_content;
 	}
@@ -73,6 +70,13 @@ class Postmark_Transport implements \Swift_Transport {
 	 */
 	public function send(\Swift_Mime_Message $message, & $failed_recipients = NULL) 
 	{
+		if ($evt = $this->_eventDispatcher->createSendEvent($this, $message)) {
+				$this->_eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
+				if ($evt->bubbleCancelled()) {
+						return 0;
+				}
+		}
+		
 		$data = array(
 			'From' => join(',', array_keys($message->getFrom())),
 			'To' => join(',', array_keys($message->getTo())),
@@ -114,7 +118,7 @@ class Postmark_Transport implements \Swift_Transport {
 			$data['HtmlBody'] = $html->getBody();
 		}
 
-		if ($message->getChildren()) 
+		if ($message->getChildren())
 		{
 			$data['Attachments'] = array();
 
@@ -133,12 +137,16 @@ class Postmark_Transport implements \Swift_Transport {
 
 		$this->api()->send($data);
 
+		if ($evt) {
+				$evt->setResult(\Swift_Events_SendEvent::RESULT_SUCCESS);
+				$this->_eventDispatcher->dispatchEvent($evt, 'sendPerformed');
+		}
+
 		return 1;
 	}
-  
+	
 	public function registerPlugin(\Swift_Events_EventListener $plugin) 
 	{
-		throw new \Exception('Postmark Transport does not support swiftmailer plugins');
-		
+		$this->_eventDispatcher->bindEventListener($plugin);
 	} 
 }

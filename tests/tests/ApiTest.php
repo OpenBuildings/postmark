@@ -57,12 +57,12 @@ class ApiTest extends PHPUnit_Framework_TestCase {
 				)
 			)
 		));
-
-		$this->assertEquals('Test job accepted', $response['Message']);
+		
+		$this->assertThat($response['Message'], $this->logicalOr($this->equalTo('Test job accepted'), $this->equalTo('Message accepted, but delivery may be delayed.')));
 
 		$this->setExpectedException('Exception');
 
-		$api->send(array(
+		$response = $api->send(array(
 			'Wrong' => 'support@example.com',
 		));
 	}
