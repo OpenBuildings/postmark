@@ -44,6 +44,18 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 	{
 		return FALSE;
 	}
+
+	public function convert_email_array(array $emails)
+	{
+		$converted = array();
+
+		foreach ($emails as $email => $name) 
+		{
+			$converted []= $name ? "{$name} <{$email}>" : $email;
+		}
+
+		return $converted;
+	}
 	
 	/**
 	 * @param Swift_Mime_Message $message
@@ -78,34 +90,34 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 		}
 		
 		$data = array(
-			'From' => join(',', array_keys($message->getFrom())),
-			'To' => join(',', array_keys($message->getTo())),
+			'From' => join(',', self::convert_email_array($message->getFrom())),
+			'To' => join(',', self::convert_email_array($message->getTo())),
 			'Subject' => $message->getSubject(),
 		);
 
 		if ($cc = $message->getCc()) 
 		{
-			$data['Cc'] = join(',', array_keys($cc));
+			$data['Cc'] = join(',', self::convert_email_array($cc));
 		}
 
 		if ($reply_to = $message->getReplyTo())
 		{
-			$data['ReplyTo'] = join(',', array_keys($reply_to));
+			$data['ReplyTo'] = join(',', self::convert_email_array($reply_to));
 		}
 
 		if ($bcc = $message->getBcc())
 		{
-			$data['Bcc'] = join(',', array_keys($bcc));
+			$data['Bcc'] = join(',', self::convert_email_array($bcc));
 		}
 
 		switch ($message->getContentType()) 
 		{
-			case 'text/plain':
-				$data['TextBody'] = $message->getBody();
-			break;
 			case 'text/html':
 				$data['HtmlBody'] = $message->getBody();
 			break;			
+			default:
+				$data['TextBody'] = $message->getBody();
+			break;
 		}
 
 		if ($plain =  $this->getMIMEPart($message, 'text/plain'))

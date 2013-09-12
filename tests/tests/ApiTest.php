@@ -36,13 +36,13 @@ class ApiTest extends PHPUnit_Framework_TestCase {
 		$api = new Api('POSTMARK_API_TEST');
 
 		$response = $api->send(array(
-			'From' => 'support@example.com',
+			'From' => 'Mark Smith <support@example.com>',
 			'To' => 'test_email@example.com,test_email2@example.com,test_email3@example.com',
 			'Subject' => 'Test',
 			'HtmlBody' => '<b>Hello</b>',
 			'TextBody' => 'Hello',
 			'ReplyTo' => 'reply@example.com',
-			'Cc' => 'test2_email@example.com,test4_email@example.com',
+			'Cc' => 'test2_email@example.com,Tom Smith <test4_email@example.com>',
 			'Bcc' => 'test3_email@example.com,test5_email@example.com',
 			'Attachments' => array(
 				array(
