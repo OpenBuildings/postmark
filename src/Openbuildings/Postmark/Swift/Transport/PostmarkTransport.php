@@ -11,7 +11,7 @@ namespace Openbuildings\Postmark;
  * @license    http://spdx.org/licenses/BSD-3-Clause
  */
 class Swift_Transport_PostmarkTransport implements \Swift_Transport {
-	
+
 	protected $_api;
 	protected $_eventDispatcher;
 
@@ -29,18 +29,18 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 		}
 		return $this->_api;
 	}
-	
-	public function isStarted() 
-	{
-		return FALSE; 
-	}
 
-	public function start() 
+	public function isStarted()
 	{
 		return FALSE;
 	}
 
-	public function stop() 
+	public function start()
+	{
+		return FALSE;
+	}
+
+	public function stop()
 	{
 		return FALSE;
 	}
@@ -49,23 +49,23 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 	{
 		$converted = array();
 
-		foreach ($emails as $email => $name) 
+		foreach ($emails as $email => $name)
 		{
-			$converted []= $name ? "{$name} <{$email}>" : $email;
+			$converted []= $name ? '"'.str_replace('"', '\\"', $name)." <{$email}>\"" : $email;
 		}
 
 		return $converted;
 	}
-	
+
 	/**
 	 * @param Swift_Mime_Message $message
 	 * @param string $mime_type
 	 * @return Swift_Mime_MimePart
 	 */
-	protected function getMIMEPart(\Swift_Mime_Message $message, $mime_type) 
+	protected function getMIMEPart(\Swift_Mime_Message $message, $mime_type)
 	{
 		$part_content = NULL;
-		foreach ($message->getChildren() as $part) 
+		foreach ($message->getChildren() as $part)
 		{
 			if (strpos($part->getContentType(), $mime_type) === 0)
 			{
@@ -80,7 +80,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 	 * @param array $failed_recipients
 	 * @return int
 	 */
-	public function send(\Swift_Mime_Message $message, & $failed_recipients = NULL) 
+	public function send(\Swift_Mime_Message $message, & $failed_recipients = NULL)
 	{
 		if ($evt = $this->_eventDispatcher->createSendEvent($this, $message)) {
 				$this->_eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
@@ -88,14 +88,14 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 						return 0;
 				}
 		}
-		
+
 		$data = array(
 			'From' => join(',', self::convert_email_array($message->getFrom())),
 			'To' => join(',', self::convert_email_array($message->getTo())),
 			'Subject' => $message->getSubject(),
 		);
 
-		if ($cc = $message->getCc()) 
+		if ($cc = $message->getCc())
 		{
 			$data['Cc'] = join(',', self::convert_email_array($cc));
 		}
@@ -110,11 +110,11 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 			$data['Bcc'] = join(',', self::convert_email_array($bcc));
 		}
 
-		switch ($message->getContentType()) 
+		switch ($message->getContentType())
 		{
 			case 'text/html':
 				$data['HtmlBody'] = $message->getBody();
-			break;			
+			break;
 			default:
 				$data['TextBody'] = $message->getBody();
 			break;
@@ -134,7 +134,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 		{
 			$data['Attachments'] = array();
 
-			foreach ($message->getChildren() as $attachment) 
+			foreach ($message->getChildren() as $attachment)
 			{
 				if (is_object($attachment) AND $attachment instanceof \Swift_Mime_Attachment)
 				{
@@ -156,9 +156,9 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 
 		return 1;
 	}
-	
-	public function registerPlugin(\Swift_Events_EventListener $plugin) 
+
+	public function registerPlugin(\Swift_Events_EventListener $plugin)
 	{
 		$this->_eventDispatcher->bindEventListener($plugin);
-	} 
+	}
 }

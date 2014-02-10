@@ -11,7 +11,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase {
 	{
 		$transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
 		$this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->api());
-		
+
 		$api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
 		$transport->api($api);
 		$mailer = Swift_Mailer::newInstance($transport);
@@ -37,11 +37,11 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase {
 		$api->expects($this->at(2))
 			->method('send')
 			->with($this->equalTo(array(
-				'From' => 'John Smith <test12@example.com>',
-				'To' => 'Paul Smith <test13@example.com>',
-				'Cc' => 'Jane Smith <test14@example.com>,test15@example.com',
-				'Bcc' => 'Gale Smith <test16@example.com>,Mark Smith <test17@example.com>',
-				'ReplyTo' => 'Tom Smith <test18@example.com>',
+				'From' => '"John Smith <test12@example.com>"',
+				'To' => '"Paul Smith <test13@example.com>"',
+				'Cc' => '"Jane \"Panny\" Smith <test14@example.com>",test15@example.com',
+				'Bcc' => '"Gale Smith <test16@example.com>","Mark Smith <test17@example.com>"',
+				'ReplyTo' => '"Tom Smith <test18@example.com>"',
 				'Subject' => 'Test Big',
 				'TextBody' => 'Text Part',
 				'HtmlBody' => 'HTML Part',
@@ -94,7 +94,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase {
 		$message->setTo('test13@example.com', 'Paul Smith');
 		$message->setReplyTo('test18@example.com', 'Tom Smith');
 		$message->setSubject('Test Big');
-		$message->setCc(array('test14@example.com' => 'Jane Smith', 'test15@example.com'));
+		$message->setCc(array('test14@example.com' => 'Jane "Panny" Smith', 'test15@example.com'));
 		$message->setBcc(array('test16@example.com' => 'Gale Smith', 'test17@example.com' => 'Mark Smith'));
 		$message->addPart('HTML Part', 'text/html');
 		$message->addPart('Text Part', 'text/plain');
@@ -113,7 +113,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase {
 		$mailer->send($message);
 
 		$transport->stop();
-		
+
 		$transport->registerPlugin($this->getMock('Swift_Events_EventListener'));
 	}
 }
