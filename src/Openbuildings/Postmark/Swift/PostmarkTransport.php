@@ -28,7 +28,7 @@ class Swift_PostmarkTransport extends Swift_Transport_PostmarkTransport
 				->createDependenciesFor('transport.postmark')
 		);
 
-		if ($token) 
+		if ($token)
 		{
 			$this->api(new Api($token));
 		}

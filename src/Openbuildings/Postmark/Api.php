@@ -15,7 +15,7 @@ class Api {
 	const SEND_URI = 'http://api.postmarkapp.com/email';
 
 	protected $_token;
-	
+
 	public function token($token = NULL)
 	{
 		if ($token !== NULL)
@@ -28,7 +28,7 @@ class Api {
 
 	public function __construct($token = NULL)
 	{
-		if ($token !== NULL) 
+		if ($token !== NULL)
 		{
 			$this->token($token);
 		}
@@ -36,7 +36,7 @@ class Api {
 
 	public function headers()
 	{
-		if ( ! $this->token()) 
+		if ( ! $this->token())
 			throw new \Exception('You must set postmark token');
 
 		return array(
@@ -67,12 +67,12 @@ class Api {
 
 		if ( ! $response)
 			throw new \Exception('Postmark delivery failed: wrong json response');
-			
+
 		$response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-		if ($response_code != 200) 
+		if ($response_code != 200)
 			throw new \Exception('Postmark delivery failed: '.$response['Message']);
-		
+
 		return $response;
 	}
 }

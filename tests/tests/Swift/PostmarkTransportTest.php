@@ -37,11 +37,11 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase {
 		$api->expects($this->at(2))
 			->method('send')
 			->with($this->equalTo(array(
-				'From' => '"John Smith <test12@example.com>"',
-				'To' => '"Paul Smith <test13@example.com>"',
-				'Cc' => '"Jane \"Panny\" Smith <test14@example.com>",test15@example.com',
-				'Bcc' => '"Gale Smith <test16@example.com>","Mark Smith <test17@example.com>"',
-				'ReplyTo' => '"Tom Smith <test18@example.com>"',
+				'From' => '"John Smith" <test12@example.com>',
+				'To' => '"Paul Smith" <test13@example.com>',
+				'Cc' => '"Jane \"Panny\" Smith" <test14@example.com>,test15@example.com',
+				'Bcc' => '"Gale Smith" <test16@example.com>,"Mark Smith" <test17@example.com>',
+				'ReplyTo' => '"Tom Smith" <test18@example.com>',
 				'Subject' => 'Test Big',
 				'TextBody' => 'Text Part',
 				'HtmlBody' => 'HTML Part',

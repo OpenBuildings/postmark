@@ -51,7 +51,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 
 		foreach ($emails as $email => $name)
 		{
-			$converted []= $name ? '"'.str_replace('"', '\\"', $name)." <{$email}>\"" : $email;
+			$converted []= $name ? '"'.str_replace('"', '\\"', $name)."\" <{$email}>" : $email;
 		}
 
 		return $converted;
