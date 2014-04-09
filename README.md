@@ -1,7 +1,6 @@
 # Postmark Transport
 
 [![Build Status](https://travis-ci.org/OpenBuildings/postmark.png?branch=master)](https://travis-ci.org/OpenBuildings/postmark)
-[![Coverage Status](https://coveralls.io/repos/OpenBuildings/postmark/badge.png?branch=master)](https://coveralls.io/r/OpenBuildings/postmark?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/openbuildings/postmark/v/stable.png)](https://packagist.org/packages/openbuildings/postmark)
 
 A full featured postmark transport for Swiftmailer, allowing attachments, html emails / parts, cc, bcc and sending multiple emails with one api call.
