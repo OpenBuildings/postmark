@@ -64,15 +64,13 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 	 */
 	protected function getMIMEPart(\Swift_Mime_Message $message, $mime_type)
 	{
-		$part_content = NULL;
 		foreach ($message->getChildren() as $part)
 		{
 			if (strpos($part->getContentType(), $mime_type) === 0)
 			{
-				$part_content = $part;
+				return $part;
 			}
 		}
-		return $part_content;
 	}
 
 	/**
@@ -113,6 +111,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport {
 		switch ($message->getContentType())
 		{
 			case 'text/html':
+			case 'multipart/alternative':
 				$data['HtmlBody'] = $message->getBody();
 			break;
 			default:
