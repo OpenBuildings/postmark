@@ -92,7 +92,10 @@ class Api
         $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         if ($response_code != 200) {
-            throw new \Exception('Postmark delivery failed: ' . $response['Message']);
+            throw new Exception(
+                'Postmark delivery failed: '.$response['Message'],
+                (int) $response['ErrorCode']
+            );
         }
 
         return $response;
