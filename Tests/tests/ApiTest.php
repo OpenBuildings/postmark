@@ -31,6 +31,13 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $api->headers());
     }
 
+    public function test_headers_no_token_exception()
+    {
+        $api = new Api();
+        $this->setExpectedException('Exception', 'You must set postmark token');
+        $api->headers();
+    }
+
     public function test_send_wrong_email()
     {
         $api = new Api('POSTMARK_API_TEST');
