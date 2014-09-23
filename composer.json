@@ -10,7 +10,8 @@
         }
     ],
     "require" : {
-        "php": ">=5.3.2"
+        "php": ">=5.3.2",
+        "lib-curl": "*"
     },
     "require-dev" : {
         "swiftmailer/swiftmailer": "~5.0"
