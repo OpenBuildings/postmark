@@ -1,14 +1,24 @@
 <?php
 
+namespace Openbuildings\Postmark\Test;
+
 use Openbuildings\Postmark\Api;
+use Openbuildings\Postmark\Test\Mock;
+use PHPUnit_Framework_TestCase;
 
 /**
  * @group   api
  */
 class ApiTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers Openbuildings\Postmark\Api::token
+     */
     public function test_token()
     {
+        $api = new Api();
+        $this->assertNull($api->token());
+
         $api = new Api('custom token');
 
         $this->assertEquals('custom token', $api->token());
@@ -18,6 +28,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('another token', $api->token());
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::headers
+     */
     public function test_headers()
     {
         $expected = array(
@@ -31,6 +44,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $api->headers());
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::headers
+     */
     public function test_headers_no_token_exception()
     {
         $api = new Api();
@@ -38,6 +54,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $api->headers();
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::send
+     */
     public function test_send_wrong_email()
     {
         $api = new Api('POSTMARK_API_TEST');
@@ -57,6 +76,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::send
+     */
     public function test_send()
     {
         $api = new Api('POSTMARK_API_TEST');
@@ -86,6 +108,13 @@ class ApiTest extends PHPUnit_Framework_TestCase
             )
         );
 
+        $this->assertArrayHasKey('To', $response);
+        $this->assertArrayHasKey('SubmittedAt', $response);
+        $this->assertArrayHasKey('MessageID', $response);
+        $this->assertArrayHasKey('ErrorCode', $response);
+        $this->assertArrayHasKey('Message', $response);
+        $this->assertEquals(0, $response['ErrorCode']);
+
         $this->assertThat(
             $response['Message'],
             $this->logicalOr(
@@ -94,11 +123,39 @@ class ApiTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->setExpectedException('Exception');
+        $this->setExpectedException(
+            'Openbuildings\Postmark\Exception',
+            "Postmark delivery failed: Invalid 'From' value.",
+            300
+        );
 
         $response = $api->send(
             array(
                 'Wrong' => 'support@example.com',
+            )
+        );
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::send
+     */
+    public function test_send_wrong_uri()
+    {
+        $api_mock = new Mock\Api_Uri('POSTMARK_API_TEST');
+
+        $this->setExpectedException(
+            'Exception',
+            'Postmark delivery failed: Failed to connect to 127.0.0.1 port 80: Connection refused'
+        );
+
+        $response = $api_mock->send(
+            array(
+                'From' => 'Mark Smith <support@example.com>',
+                'To' => 'test_email@example.com,test_email2@example.com,test_email3@example.com',
+                'Subject' => 'Test',
+                'HtmlBody' => '<b>Hello</b>',
+                'TextBody' => 'Hello',
+                'ReplyTo' => 'reply@example.com',
             )
         );
     }

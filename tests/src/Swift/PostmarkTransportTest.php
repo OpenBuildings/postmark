@@ -1,12 +1,21 @@
 <?php
 
+namespace Openbuildings\Postmark\Test;
+
 use Openbuildings\Postmark\Swift_PostmarkTransport;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_Attachment;
+use PHPUnit_Framework_TestCase;
 
 /**
  * @group   swift.postmark-transport
  */
-class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
+class Swift_PostmarkTransportTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @coversNothing
+     */
     public function test_send()
     {
         $transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');

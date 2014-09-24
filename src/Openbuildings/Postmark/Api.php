@@ -69,7 +69,7 @@ class Api
         curl_setopt_array(
             $curl,
             array(
-                CURLOPT_URL => self::SEND_URI,
+                CURLOPT_URL => static::SEND_URI,
                 CURLOPT_POST => true,
                 CURLOPT_HTTPHEADER => $this->headers(),
                 CURLOPT_POSTFIELDS => json_encode($data),
