@@ -84,7 +84,8 @@ class Api
         $response = curl_exec($curl);
 
         if (!$response) {
-            throw new \Exception('Postmark delivery failed: ' . curl_error($curl));
+            $curl_error = curl_error($curl) ?: 'unknown cURL error';
+            throw new \Exception('Postmark delivery failed: ' . $curl_error);
         }
 
         $response = @json_decode($response, true);

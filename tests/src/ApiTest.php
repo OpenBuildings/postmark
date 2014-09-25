@@ -3,7 +3,6 @@
 namespace Openbuildings\Postmark\Test;
 
 use Openbuildings\Postmark\Api;
-use Openbuildings\Postmark\Test\Mock;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -189,5 +188,44 @@ class ApiTest extends PHPUnit_Framework_TestCase
 
         $api->set_is_secure(true);
         $this->assertEquals(Api::SEND_URI_SECURE, $api->get_send_uri());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::send
+     */
+    public function test_send_wrong_json()
+    {
+        $api_mock = $this->getMock(
+            'Openbuildings\Postmark\Api',
+            array(
+                'get_send_uri'
+            ),
+            array(
+                'POSTMARK_API_TEST'
+            )
+        );
+
+        $path_to_wrong_json = 'file://'.realpath(__DIR__.'/../test_data/wrong-json.json');
+
+        $api_mock
+            ->expects($this->once())
+            ->method('get_send_uri')
+            ->will($this->returnValue($path_to_wrong_json));
+
+        $this->setExpectedException(
+            'Exception',
+            'Postmark delivery failed: wrong json response'
+        );
+
+        $response = $api_mock->send(
+            array(
+                'From' => 'Mark Smith <support@example.com>',
+                'To' => 'test_email@example.com,test_email2@example.com,test_email3@example.com',
+                'Subject' => 'Test',
+                'HtmlBody' => '<b>Hello</b>',
+                'TextBody' => 'Hello',
+                'ReplyTo' => 'reply@example.com',
+            )
+        );
     }
 }
