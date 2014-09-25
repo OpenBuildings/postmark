@@ -155,9 +155,11 @@ class ApiTest extends PHPUnit_Framework_TestCase
     {
         $api_mock = new Mock\Api_Uri('POSTMARK_API_TEST');
 
+        // Either: Postmark delivery failed: couldn't connect to host
+        // Or: Postmark delivery failed: Failed to connect to 127.0.0.1 port 80: Connection refused
         $this->setExpectedException(
             'Exception',
-            'Postmark delivery failed: Failed to connect to 127.0.0.1 port 80: Connection refused'
+            'connect to'
         );
 
         $response = $api_mock->send(
