@@ -2,6 +2,8 @@
 
 namespace Openbuildings\Postmark;
 
+use Swift_DependencyContainer;
+
 /**
  * Class for manupulating a server
  *
@@ -19,14 +21,14 @@ class Swift_PostmarkTransport extends Swift_Transport_PostmarkTransport
      */
     public function __construct($token = null)
     {
-        \Swift_DependencyContainer::getInstance()
+        Swift_DependencyContainer::getInstance()
             ->register('transport.postmark')
             ->asNewInstanceOf('Openbuildings\Postmark\Swift_Transport_PostmarkTransport')
             ->withDependencies(array('transport.eventdispatcher'));
 
         call_user_func_array(
             array($this, 'Openbuildings\Postmark\Swift_Transport_PostmarkTransport::__construct'),
-            \Swift_DependencyContainer::getInstance()
+            Swift_DependencyContainer::getInstance()
                 ->createDependenciesFor('transport.postmark')
         );
 

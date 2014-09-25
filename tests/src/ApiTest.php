@@ -12,6 +12,18 @@ use PHPUnit_Framework_TestCase;
 class ApiTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers Openbuildings\Postmark\Api::__construct
+     */
+    public function test_constructor()
+    {
+        $api = new Api();
+        $this->assertNull($api->token());
+
+        $api = new Api('token');
+        $this->assertEquals('token', $api->token());
+    }
+
+    /**
      * @covers Openbuildings\Postmark\Api::token
      */
     public function test_token()
