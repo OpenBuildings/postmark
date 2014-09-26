@@ -16,6 +16,14 @@ class Api
 
     protected $_token;
 
+
+    public function __construct($token = null)
+    {
+        if ($token !== null) {
+            $this->token($token);
+        }
+    }
+
     /**
      * @param null|string $token
      *
@@ -28,13 +36,6 @@ class Api
             return $this;
         }
         return $this->_token;
-    }
-
-    public function __construct($token = null)
-    {
-        if ($token !== null) {
-            $this->token($token);
-        }
     }
 
     /**
@@ -69,7 +70,7 @@ class Api
         curl_setopt_array(
             $curl,
             array(
-                CURLOPT_URL => self::SEND_URI,
+                CURLOPT_URL => static::SEND_URI,
                 CURLOPT_POST => true,
                 CURLOPT_HTTPHEADER => $this->headers(),
                 CURLOPT_POSTFIELDS => json_encode($data),

@@ -1,14 +1,36 @@
 <?php
 
+namespace Openbuildings\Postmark\Test;
+
 use Openbuildings\Postmark\Api;
+use Openbuildings\Postmark\Test\Mock;
+use PHPUnit_Framework_TestCase;
 
 /**
  * @group   api
  */
 class ApiTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers Openbuildings\Postmark\Api::__construct
+     */
+    public function test_constructor()
+    {
+        $api = new Api();
+        $this->assertNull($api->token());
+
+        $api = new Api('token');
+        $this->assertEquals('token', $api->token());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::token
+     */
     public function test_token()
     {
+        $api = new Api();
+        $this->assertNull($api->token());
+
         $api = new Api('custom token');
 
         $this->assertEquals('custom token', $api->token());
@@ -18,6 +40,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('another token', $api->token());
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::headers
+     */
     public function test_headers()
     {
         $expected = array(
@@ -31,6 +56,19 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $api->headers());
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::headers
+     */
+    public function test_headers_no_token_exception()
+    {
+        $api = new Api();
+        $this->setExpectedException('Exception', 'You must set postmark token');
+        $api->headers();
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::send
+     */
     public function test_send_wrong_email()
     {
         $api = new Api('POSTMARK_API_TEST');
@@ -50,6 +88,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers Openbuildings\Postmark\Api::send
+     */
     public function test_send()
     {
         $api = new Api('POSTMARK_API_TEST');
@@ -79,6 +120,13 @@ class ApiTest extends PHPUnit_Framework_TestCase
             )
         );
 
+        $this->assertArrayHasKey('To', $response);
+        $this->assertArrayHasKey('SubmittedAt', $response);
+        $this->assertArrayHasKey('MessageID', $response);
+        $this->assertArrayHasKey('ErrorCode', $response);
+        $this->assertArrayHasKey('Message', $response);
+        $this->assertEquals(0, $response['ErrorCode']);
+
         $this->assertThat(
             $response['Message'],
             $this->logicalOr(
@@ -87,7 +135,11 @@ class ApiTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->setExpectedException('Exception');
+        $this->setExpectedException(
+            'Openbuildings\Postmark\Exception',
+            "Postmark delivery failed: Invalid 'From' value.",
+            300
+        );
 
         $response = $api->send(
             array(

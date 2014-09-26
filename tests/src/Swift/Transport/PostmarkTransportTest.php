@@ -1,12 +1,108 @@
 <?php
 
+namespace Openbuildings\Postmark\Test;
+
 use Openbuildings\Postmark\Swift_PostmarkTransport;
+use Openbuildings\Postmark\Api;
+use Openbuildings\Postmark\Swift_Transport_PostmarkTransport;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_Attachment;
+use PHPUnit_Framework_TestCase;
+use Swift_DependencyContainer;
+use Swift_Events_SimpleEventDispatcher;
 
 /**
  * @group   swift.postmark-transport
  */
-class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
+class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
 {
+    public function get_transport_postmark()
+    {
+        return new Swift_Transport_PostmarkTransport(
+            new Swift_Events_SimpleEventDispatcher()
+        );
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::api
+     */
+    public function test_api()
+    {
+        $api = new Api();
+        $transport_postmark = $this->get_transport_postmark();
+
+        $this->assertNull($transport_postmark->api());
+
+        $transport_postmark->api($api);
+
+        $this->assertSame($api, $transport_postmark->api());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::isStarted
+     */
+    public function testIsStarted()
+    {
+        $this->assertFalse($this->get_transport_postmark()->isStarted());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::start
+     */
+    public function testStart()
+    {
+        $this->assertFalse($this->get_transport_postmark()->start());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::stop
+     */
+    public function testStop()
+    {
+        $this->assertFalse($this->get_transport_postmark()->stop());
+    }
+
+    public function data_convert_email_array()
+    {
+        return array(
+            array(
+                array(),
+                array(),
+            ),
+            array(
+                array(
+                    'john.smith@example.com' => 'John Smith',
+                    'john.long.doe@example.com' => 'John "Long" Doe',
+                    'me@example.com' => '',
+                ),
+                array(
+                    '"John Smith" <john.smith@example.com>',
+                    '"John \\"Long\\" Doe" <john.long.doe@example.com>',
+                    'me@example.com',
+                ),
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider data_convert_email_array
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convert_email_array
+     */
+    public function test_convert_email_array(array $emails, $expected_converted_emails)
+    {
+        $transport_postmark = $this->get_transport_postmark();
+        $this->assertSame(
+            $expected_converted_emails,
+            $transport_postmark->convert_email_array($emails)
+        );
+    }
+
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getMIMEPart
+     */
     public function test_send()
     {
         $transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
@@ -114,7 +210,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $message->setBcc(array('test16@example.com' => 'Gale Smith', 'test17@example.com' => 'Mark Smith'));
         $message->addPart('HTML Part', 'text/html');
         $message->addPart('Text Part', 'text/plain');
-        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../../test_data/logo_black.png'));
+        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../../../test_data/logo_black.png'));
 
         $mailer->send($message);
 
@@ -124,12 +220,89 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $message->setTo('test13@example.com');
         $message->setSubject('Test Big');
         $message->setBody('Text Body');
-        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../../test_data/logo_black.png'));
+        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../../../test_data/logo_black.png'));
 
         $mailer->send($message);
 
         $transport->stop();
 
         $transport->registerPlugin($this->getMock('Swift_Events_EventListener'));
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
+     */
+    public function test_send_event_cancelled()
+    {
+        $event_dispatcher_mock = $this->getMock(
+            'Swift_Events_SimpleEventDispatcher',
+            array(
+                'createSendEvent',
+                'dispatchEvent'
+            )
+        );
+
+        $transport_postmark = new Swift_Transport_PostmarkTransport(
+            $event_dispatcher_mock
+        );
+
+        $send_event_mock = $this->getMock(
+            'Swift_Events_SendEvent',
+            array(
+                'bubbleCancelled'
+            ),
+            array(),
+            '',
+            false
+        );
+
+        $send_event_mock
+            ->expects($this->once())
+            ->method('bubbleCancelled')
+            ->will($this->returnValue(true));
+
+        $message = $this->getMock(
+            'Swift_Mime_SimpleMessage',
+            array(),
+            array(),
+            '',
+            false
+        );
+
+        $event_dispatcher_mock
+            ->expects($this->once())
+            ->method('createSendEvent')
+            ->will($this->returnValue($send_event_mock));
+
+        $event_dispatcher_mock
+            ->expects($this->once())
+            ->method('dispatchEvent');
+
+        $result = $transport_postmark->send($message);
+        $this->assertSame(0, $result);
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::__construct
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::registerPlugin
+     */
+    public function testRegisterPlugin()
+    {
+        $event_dispatcher = $this->getMock(
+            'Swift_Events_SimpleEventDispatcher',
+            array(
+                'bindEventListener'
+            )
+        );
+
+        $event_listener = $this->getMock('Swift_Plugins_MessageLogger');
+
+        $event_dispatcher
+            ->expects($this->once())
+            ->method('bindEventListener')
+            ->with($event_listener);
+
+        $transport_postmark = new Swift_Transport_PostmarkTransport($event_dispatcher);
+        $transport_postmark->registerPlugin($event_listener);
     }
 }

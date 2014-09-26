@@ -3,7 +3,7 @@
 namespace Openbuildings\Postmark;
 
 /**
- * Postmark API exception like sending email to nactive emails
+ * Postmark API exception like sending email to inactive emails
  */
 class Exception extends \Exception
 {

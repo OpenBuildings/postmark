@@ -12,8 +12,10 @@ notifications:
   slack:
     secure: jihdAhibtEKmK6HNzM5QAkLNYZZ6MAk/c2PTauUjht3FWTvj/9hqSrfeJ4WX2ECfhNfgYEtMVd34EULFqlyWOOury2+FVkxSfN9SLt92EhvCwIMS5ITONOASSm13DtRJUTA+ctj/ndeQq1Iwox+LcT4o6Z8ncSekqD6RQOPgAA8=
 
-install:
+before_install:
   - composer selfupdate
+
+install:
   - composer install --no-interaction
 
 before_script:
