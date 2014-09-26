@@ -41,7 +41,6 @@ class Swift_PostmarkTransport extends Swift_Transport_PostmarkTransport
      * Create a new PostmarkTransport instance.
      *
      * @param null|string $token
-     *
      * @return Swift_PostmarkTransport
      */
     public static function newInstance($token = null)
