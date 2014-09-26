@@ -148,31 +148,31 @@ class ApiTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Api::get_is_secure
+     * @covers Openbuildings\Postmark\Api::is_secure
      */
-    public function test_get_is_secure()
+    public function test_is_secure()
     {
         $api = new Api();
-        $this->assertTrue($api->get_is_secure());
+        $this->assertTrue($api->is_secure());
 
-        $api->set_is_secure(false);
-        $this->assertFalse($api->get_is_secure());
+        $api->set_secure(false);
+        $this->assertFalse($api->is_secure());
 
-        $api->set_is_secure(true);
-        $this->assertTrue($api->get_is_secure());
+        $api->set_secure(true);
+        $this->assertTrue($api->is_secure());
     }
 
     /**
-     * @covers Openbuildings\Postmark\Api::set_is_secure
+     * @covers Openbuildings\Postmark\Api::set_secure
      */
-    public function test_set_is_secure()
+    public function test_set_secure()
     {
         $api = new Api();
-        $this->assertSame($api, $api->set_is_secure(false));
-        $this->assertFalse($api->get_is_secure());
+        $this->assertSame($api, $api->set_secure(false));
+        $this->assertFalse($api->is_secure());
 
-        $api->set_is_secure(true);
-        $this->assertTrue($api->get_is_secure());
+        $api->set_secure(true);
+        $this->assertTrue($api->is_secure());
     }
 
     /**
@@ -183,10 +183,10 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $api = new Api();
         $this->assertEquals(Api::SEND_URI_SECURE, $api->get_send_uri());
 
-        $api->set_is_secure(false);
+        $api->set_secure(false);
         $this->assertEquals(Api::SEND_URI, $api->get_send_uri());
 
-        $api->set_is_secure(true);
+        $api->set_secure(true);
         $this->assertEquals(Api::SEND_URI_SECURE, $api->get_send_uri());
     }
 

@@ -18,7 +18,7 @@ class Api
 
     protected $_token;
 
-    protected $_is_secure = true;
+    protected $secure = true;
 
     public function __construct($token = null)
     {
@@ -106,21 +106,21 @@ class Api
         return $response;
     }
 
-    public function get_is_secure()
+    public function is_secure()
     {
-        return $this->_is_secure;
+        return $this->secure;
     }
 
-    public function set_is_secure($is_secure)
+    public function set_secure($secure)
     {
-        $this->_is_secure = $is_secure;
+        $this->secure = $secure;
 
         return $this;
     }
 
     public function get_send_uri()
     {
-        if ($this->get_is_secure())
+        if ($this->is_secure())
         {
             return static::SEND_URI_SECURE;
         }
