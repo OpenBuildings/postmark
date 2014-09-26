@@ -147,30 +147,4 @@ class ApiTest extends PHPUnit_Framework_TestCase
             )
         );
     }
-
-    /**
-     * @covers Openbuildings\Postmark\Api::send
-     */
-    public function test_send_wrong_uri()
-    {
-        $api_mock = new Mock\Api_Uri('POSTMARK_API_TEST');
-
-        // Either: Postmark delivery failed: couldn't connect to host
-        // Or: Postmark delivery failed: Failed to connect to 127.0.0.1 port 80: Connection refused
-        $this->setExpectedException(
-            'Exception',
-            'connect to'
-        );
-
-        $response = $api_mock->send(
-            array(
-                'From' => 'Mark Smith <support@example.com>',
-                'To' => 'test_email@example.com,test_email2@example.com,test_email3@example.com',
-                'Subject' => 'Test',
-                'HtmlBody' => '<b>Hello</b>',
-                'TextBody' => 'Hello',
-                'ReplyTo' => 'reply@example.com',
-            )
-        );
-    }
 }
