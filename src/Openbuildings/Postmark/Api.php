@@ -14,8 +14,11 @@ class Api
 {
     const SEND_URI = 'http://api.postmarkapp.com/email';
 
+    const SEND_URI_SECURE = 'https://api.postmarkapp.com/email';
+
     protected $_token;
 
+    protected $secure = true;
 
     public function __construct($token = null)
     {
@@ -70,7 +73,7 @@ class Api
         curl_setopt_array(
             $curl,
             array(
-                CURLOPT_URL => static::SEND_URI,
+                CURLOPT_URL => $this->get_send_uri(),
                 CURLOPT_POST => true,
                 CURLOPT_HTTPHEADER => $this->headers(),
                 CURLOPT_POSTFIELDS => json_encode($data),
@@ -81,7 +84,8 @@ class Api
         $response = curl_exec($curl);
 
         if (!$response) {
-            throw new \Exception('Postmark delivery failed: ' . curl_error($curl));
+            $curl_error = curl_error($curl) ?: 'unknown cURL error';
+            throw new \Exception('Postmark delivery failed: ' . $curl_error);
         }
 
         $response = @json_decode($response, true);
@@ -100,5 +104,29 @@ class Api
         }
 
         return $response;
+    }
+
+    public function is_secure()
+    {
+        return $this->secure;
+    }
+
+    public function set_secure($secure)
+    {
+        $this->secure = $secure;
+
+        return $this;
+    }
+
+    public function get_send_uri()
+    {
+        if ($this->is_secure())
+        {
+            return static::SEND_URI_SECURE;
+        }
+        else
+        {
+            return static::SEND_URI;
+        }
     }
 }
