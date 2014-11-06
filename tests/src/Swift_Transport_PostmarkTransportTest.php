@@ -244,7 +244,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $message->setBcc(array('test16@example.com' => 'Gale Smith', 'test17@example.com' => 'Mark Smith'));
         $message->addPart('HTML Part', 'text/html');
         $message->addPart('Text Part', 'text/plain');
-        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../../../test_data/logo_black.png'));
+        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../test_data/logo_black.png'));
 
         $mailer->send($message);
 
@@ -254,7 +254,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $message->setTo('test13@example.com');
         $message->setSubject('Test Big');
         $message->setBody('Text Body');
-        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../../../test_data/logo_black.png'));
+        $message->attach(Swift_Attachment::fromPath(__DIR__ . '/../test_data/logo_black.png'));
 
         $mailer->send($message);
 
