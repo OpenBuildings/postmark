@@ -24,7 +24,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $this->assertNull($postmarkTransport->getApi());
 
         $postmarkTransport = Swift_PostmarkTransport::newInstance('token');
-        $this->assertEquals('token', $postmarkTransport->getApi()->token());
+        $this->assertEquals('token', $postmarkTransport->getApi()->getToken());
     }
 
     /**
@@ -37,6 +37,6 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
             Swift_DependencyContainer::getInstance()->has('transport.postmark')
         );
 
-        $this->assertEquals('token', $postmarkTransport->getApi()->token());
+        $this->assertEquals('token', $postmarkTransport->getApi()->getToken());
     }
 }
