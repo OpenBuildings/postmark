@@ -56,11 +56,9 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $this->assertNull($api->token());
 
         $api = new Api('custom token');
-
         $this->assertEquals('custom token', $api->token());
 
         $api->token('another token');
-
         $this->assertEquals('another token', $api->token());
     }
 
