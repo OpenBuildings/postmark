@@ -64,7 +64,7 @@ class Api
      */
     public function getHeaders()
     {
-        if (!$this->token()) {
+        if (! $this->token()) {
             throw new \Exception('You must set postmark token');
         }
 
@@ -103,7 +103,7 @@ class Api
 
         $response = curl_exec($curl);
 
-        if (!$response) {
+        if (! $response) {
             $curlError = curl_error($curl) ?: 'unknown cURL error';
             throw new \Exception(sprintf(
                 'Postmark delivery failed: %s',
@@ -113,7 +113,7 @@ class Api
 
         $response = @json_decode($response, true);
 
-        if (!$response) {
+        if (! $response) {
             throw new \Exception('Postmark delivery failed: wrong json response');
         }
 
