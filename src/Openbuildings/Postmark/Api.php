@@ -176,6 +176,8 @@ class Api
      */
     public function token($token = null)
     {
+        trigger_error('token is deprecated, use getToken and setToken instead', E_USER_DEPRECATED);
+
         if ($token !== null) {
             return $this->setToken($token);
         }
@@ -191,6 +193,7 @@ class Api
      */
     public function headers()
     {
+        trigger_error('headers is deprecated, use getHeaders instead', E_USER_DEPRECATED);
         return $this->getHeaders();
     }
 
@@ -202,6 +205,7 @@ class Api
      */
     public function is_secure()
     {
+        trigger_error('is_secure is deprecated, use isSecure instead', E_USER_DEPRECATED);
         return $this->isSecure();
     }
 
@@ -214,6 +218,7 @@ class Api
      */
     public function set_secure($secure)
     {
+        trigger_error('set_secure is deprecated, use setSecure instead', E_USER_DEPRECATED);
         return $this->setSecure($secure);
     }
 
@@ -225,6 +230,7 @@ class Api
      */
     public function get_send_uri()
     {
+        trigger_error('get_send_uri is deprecated, use getSendUri instead', E_USER_DEPRECATED);
         return $this->getSendUri();
     }
 }

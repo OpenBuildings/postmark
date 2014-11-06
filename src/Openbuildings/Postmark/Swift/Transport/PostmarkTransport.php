@@ -199,6 +199,8 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
      */
     public function api(Api $api = null)
     {
+        trigger_error('api is deprecated, use getApi and setApi instead', E_USER_DEPRECATED);
+
         if ($api !== null) {
             return $this->setApi($api);
         }
@@ -216,6 +218,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
      */
     public function convert_email_array(array $emails)
     {
+        trigger_error('convert_email_array is deprecated, use convertEmailsArray instead', E_USER_DEPRECATED);
         return static::convertEmailsArray($emails);
     }
 }
