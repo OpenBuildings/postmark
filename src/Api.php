@@ -64,14 +64,14 @@ class Api
      */
     public function getHeaders()
     {
-        if (! $this->token()) {
+        if (! $this->getToken()) {
             throw new \Exception('You must set postmark token');
         }
 
         return array(
             'Accept: application/json',
             'Content-Type: application/json',
-            'X-Postmark-Server-Token: '.$this->token(),
+            'X-Postmark-Server-Token: '.$this->getToken(),
         );
     }
 
