@@ -140,10 +140,10 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     public function testSend()
     {
         $transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
-        $this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->api());
+        $this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->getApi());
 
         $api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
-        $transport->api($api);
+        $transport->setApi($api);
         $mailer = Swift_Mailer::newInstance($transport);
 
         $api->expects($this->at(0))
