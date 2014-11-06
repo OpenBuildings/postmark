@@ -17,7 +17,7 @@ use Swift_Events_SimpleEventDispatcher;
  */
 class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
 {
-    public function get_transport_postmark()
+    public function getTransportPostmark()
     {
         return new Swift_Transport_PostmarkTransport(
             new Swift_Events_SimpleEventDispatcher()
@@ -25,18 +25,40 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::api
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getApi
      */
-    public function test_api()
+    public function testGetApi()
+    {
+        $transportPostmark = $this->getTransportPostmark();
+        $this->assertNull($transportPostmark->getApi());
+
+        $api = new Api();
+        $transportPostmark->setApi($api);
+        $this->assertSame($api, $transportPostmark->getApi());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::setApi
+     */
+    public function testSetApi()
     {
         $api = new Api();
-        $transport_postmark = $this->get_transport_postmark();
+        $transportPostmark = $this->getTransportPostmark();
+        $transportPostmark->setApi($api);
+        $this->assertSame($api, $transportPostmark->getApi());
+    }
 
-        $this->assertNull($transport_postmark->api());
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::api
+     */
+    public function testApi()
+    {
+        $transportPostmark = $this->getTransportPostmark();
+        $this->assertNull($transportPostmark->api());
 
-        $transport_postmark->api($api);
-
-        $this->assertSame($api, $transport_postmark->api());
+        $api = new Api();
+        $transportPostmark->api($api);
+        $this->assertSame($api, $transportPostmark->api());
     }
 
     /**
@@ -44,7 +66,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testIsStarted()
     {
-        $this->assertFalse($this->get_transport_postmark()->isStarted());
+        $this->assertFalse($this->getTransportPostmark()->isStarted());
     }
 
     /**
@@ -52,7 +74,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testStart()
     {
-        $this->assertFalse($this->get_transport_postmark()->start());
+        $this->assertFalse($this->getTransportPostmark()->start());
     }
 
     /**
@@ -60,10 +82,10 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testStop()
     {
-        $this->assertFalse($this->get_transport_postmark()->stop());
+        $this->assertFalse($this->getTransportPostmark()->stop());
     }
 
-    public function data_convert_email_array()
+    public function dataConvertEmailsArray()
     {
         return array(
             array(
@@ -86,24 +108,36 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider data_convert_email_array
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convert_email_array
+     * @dataProvider dataConvertEmailsArray
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convertEmailsArray
      */
-    public function test_convert_email_array(array $emails, $expected_converted_emails)
+    public function testConvertEmailsArray(array $emails, $expectedConvertedEmails)
     {
-        $transport_postmark = $this->get_transport_postmark();
+        $transportPostmark = $this->getTransportPostmark();
         $this->assertSame(
-            $expected_converted_emails,
-            $transport_postmark->convert_email_array($emails)
+            $expectedConvertedEmails,
+            Swift_Transport_PostmarkTransport::convertEmailsArray($emails)
         );
     }
 
+    /**
+     * @dataProvider dataConvertEmailsArray
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convert_email_array
+     */
+    public function testConvertEmailArrayLegacy(array $emails, $expectedConvertedEmails)
+    {
+        $transportPostmark = $this->getTransportPostmark();
+        $this->assertSame(
+            $expectedConvertedEmails,
+            $transportPostmark->convert_email_array($emails)
+        );
+    }
 
     /**
      * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
      * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getMIMEPart
      */
-    public function test_send()
+    public function testSend()
     {
         $transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
         $this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->api());
@@ -232,7 +266,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
      */
-    public function test_send_event_cancelled()
+    public function testSendEventCancelled()
     {
         $event_dispatcher_mock = $this->getMock(
             'Swift_Events_SimpleEventDispatcher',
@@ -242,7 +276,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $transport_postmark = new Swift_Transport_PostmarkTransport(
+        $transportPostmark = new Swift_Transport_PostmarkTransport(
             $event_dispatcher_mock
         );
 
@@ -278,7 +312,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('dispatchEvent');
 
-        $result = $transport_postmark->send($message);
+        $result = $transportPostmark->send($message);
         $this->assertSame(0, $result);
     }
 
@@ -302,7 +336,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
             ->method('bindEventListener')
             ->with($event_listener);
 
-        $transport_postmark = new Swift_Transport_PostmarkTransport($event_dispatcher);
-        $transport_postmark->registerPlugin($event_listener);
+        $transportPostmark = new Swift_Transport_PostmarkTransport($event_dispatcher);
+        $transportPostmark->registerPlugin($event_listener);
     }
 }

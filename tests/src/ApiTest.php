@@ -13,36 +13,59 @@ class ApiTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Api::__construct
      */
-    public function test_constructor()
+    public function testConstructor()
     {
         $api = new Api();
-        $this->assertNull($api->token());
+        $this->assertNull($api->getToken());
 
         $api = new Api('token');
-        $this->assertEquals('token', $api->token());
+        $this->assertEquals('token', $api->getToken());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::setToken
+     */
+    public function testSetToken()
+    {
+        $api = new Api();
+        $api->setToken('token');
+        $this->assertEquals('token', $api->getToken());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::getToken
+     */
+    public function testGetToken()
+    {
+        $api = new Api();
+        $this->assertNull($api->getToken());
+
+        $api = new Api('custom token');
+        $this->assertEquals('custom token', $api->getToken());
+
+        $api->setToken('another token');
+        $this->assertEquals('another token', $api->getToken());
     }
 
     /**
      * @covers Openbuildings\Postmark\Api::token
      */
-    public function test_token()
+    public function testTokenLegacy()
     {
         $api = new Api();
         $this->assertNull($api->token());
 
         $api = new Api('custom token');
-
         $this->assertEquals('custom token', $api->token());
 
         $api->token('another token');
-
         $this->assertEquals('another token', $api->token());
     }
 
     /**
      * @covers Openbuildings\Postmark\Api::headers
      */
-    public function test_headers()
+    public function testHeadersLegacy()
     {
         $expected = array(
             'Accept: application/json',
@@ -56,9 +79,35 @@ class ApiTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Openbuildings\Postmark\Api::getHeaders
+     */
+    public function testGetHeaders()
+    {
+        $expected = array(
+            'Accept: application/json',
+            'Content-Type: application/json',
+            'X-Postmark-Server-Token: custom token',
+        );
+
+        $api = new Api('custom token');
+
+        $this->assertEquals($expected, $api->getHeaders());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::getHeaders
+     */
+    public function testGetHeadersNoTokenException()
+    {
+        $api = new Api();
+        $this->setExpectedException('Exception', 'You must set postmark token');
+        $api->getHeaders();
+    }
+
+    /**
      * @covers Openbuildings\Postmark\Api::headers
      */
-    public function test_headers_no_token_exception()
+    public function testHeadersNoTokenException()
     {
         $api = new Api();
         $this->setExpectedException('Exception', 'You must set postmark token');
@@ -68,13 +117,17 @@ class ApiTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Api::send
      */
-    public function test_send_wrong_email()
+    public function testSendWrongEmail()
     {
         $api = new Api('POSTMARK_API_TEST');
 
         $this->setExpectedException(
             'Exception',
-            "Postmark delivery failed: Error parsing 'To': Illegal email domain 'example.com>' in address 'Jimmy Kenno <test_email@example.com>'"
+            sprintf(
+                "Postmark delivery failed: Error parsing 'To': Illegal email domain '%s' in address '%s'",
+                'example.com>',
+                'Jimmy Kenno <test_email@example.com>'
+            )
         );
 
         $response = $api->send(
@@ -90,7 +143,7 @@ class ApiTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Api::send
      */
-    public function test_send()
+    public function testSend()
     {
         $api = new Api('POSTMARK_API_TEST');
 
@@ -140,17 +193,58 @@ class ApiTest extends PHPUnit_Framework_TestCase
             300
         );
 
-        $response = $api->send(
-            array(
-                'Wrong' => 'support@example.com',
-            )
-        );
+        $response = $api->send(array(
+            'Wrong' => 'support@example.com',
+        ));
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::isSecure
+     */
+    public function testIsSecure()
+    {
+        $api = new Api();
+        $this->assertTrue($api->isSecure());
+
+        $api->setSecure(false);
+        $this->assertFalse($api->isSecure());
+
+        $api->setSecure(true);
+        $this->assertTrue($api->isSecure());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::setSecure
+     */
+    public function testSetSecure()
+    {
+        $api = new Api();
+        $this->assertSame($api, $api->setSecure(false));
+        $this->assertFalse($api->isSecure());
+
+        $api->setSecure(true);
+        $this->assertTrue($api->isSecure());
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Api::getSendUri
+     */
+    public function testGetSendUri()
+    {
+        $api = new Api();
+        $this->assertEquals(Api::SEND_URI_SECURE, $api->getSendUri());
+
+        $api->setSecure(false);
+        $this->assertEquals(Api::SEND_URI, $api->getSendUri());
+
+        $api->setSecure(true);
+        $this->assertEquals(Api::SEND_URI_SECURE, $api->getSendUri());
     }
 
     /**
      * @covers Openbuildings\Postmark\Api::is_secure
      */
-    public function test_is_secure()
+    public function testIsSecureLegacy()
     {
         $api = new Api();
         $this->assertTrue($api->is_secure());
@@ -165,7 +259,7 @@ class ApiTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Api::set_secure
      */
-    public function test_set_secure()
+    public function testSetSecureLegacy()
     {
         $api = new Api();
         $this->assertSame($api, $api->set_secure(false));
@@ -178,7 +272,7 @@ class ApiTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Api::get_send_uri
      */
-    public function test_get_send_uri()
+    public function testGetSendUriLegacy()
     {
         $api = new Api();
         $this->assertEquals(Api::SEND_URI_SECURE, $api->get_send_uri());
@@ -193,39 +287,37 @@ class ApiTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Api::send
      */
-    public function test_send_wrong_json()
+    public function testSendWrongJson()
     {
-        $api_mock = $this->getMock(
+        $apiMock = $this->getMock(
             'Openbuildings\Postmark\Api',
             array(
-                'get_send_uri'
+                'getSendUri'
             ),
             array(
                 'POSTMARK_API_TEST'
             )
         );
 
-        $path_to_wrong_json = 'file://'.realpath(__DIR__.'/../test_data/wrong-json.json');
+        $pathToWrongJson = 'file://'.realpath(__DIR__.'/../test_data/wrong-json.json');
 
-        $api_mock
+        $apiMock
             ->expects($this->once())
-            ->method('get_send_uri')
-            ->will($this->returnValue($path_to_wrong_json));
+            ->method('getSendUri')
+            ->will($this->returnValue($pathToWrongJson));
 
         $this->setExpectedException(
             'Exception',
             'Postmark delivery failed: wrong json response'
         );
 
-        $response = $api_mock->send(
-            array(
-                'From' => 'Mark Smith <support@example.com>',
-                'To' => 'test_email@example.com,test_email2@example.com,test_email3@example.com',
-                'Subject' => 'Test',
-                'HtmlBody' => '<b>Hello</b>',
-                'TextBody' => 'Hello',
-                'ReplyTo' => 'reply@example.com',
-            )
-        );
+        $response = $apiMock->send(array(
+            'From' => 'Mark Smith <support@example.com>',
+            'To' => 'test_email@example.com,test_email2@example.com,test_email3@example.com',
+            'Subject' => 'Test',
+            'HtmlBody' => '<b>Hello</b>',
+            'TextBody' => 'Hello',
+            'ReplyTo' => 'reply@example.com',
+        ));
     }
 }

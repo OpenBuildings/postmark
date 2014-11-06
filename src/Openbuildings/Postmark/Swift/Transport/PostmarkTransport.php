@@ -12,26 +12,64 @@ namespace Openbuildings\Postmark;
  */
 class Swift_Transport_PostmarkTransport implements \Swift_Transport
 {
-    protected $_api;
-    protected $_eventDispatcher;
+    /**
+     * The Postmark API SDK instance.
+     *
+     * @var Openbuildings\Postmark\Api
+     */
+    protected $api;
+
+    /**
+     * @var Swift_Events_EventDispatcher
+     */
+    protected $eventDispatcher;
 
     public function __construct(\Swift_Events_EventDispatcher $eventDispatcher)
     {
-        $this->_eventDispatcher = $eventDispatcher;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * @param Api $api
+     * Convert email dictionary with emails and names
+     * to array of emails with names.
      *
+     * @param array $emails
+     * @return array
+     */
+    public static function convertEmailsArray(array $emails)
+    {
+        $convertedEmails = array();
+
+        foreach ($emails as $email => $name) {
+            $convertedEmails [] = $name
+                ? '"'.str_replace('"', '\\"', $name)."\" <{$email}>"
+                : $email;
+        }
+
+        return $convertedEmails;
+    }
+
+    /**
+     * Get the Postmark API SDK instance
+     *
+     * @return Openbuildings\Postmark\Api
+     */
+    public function getApi()
+    {
+        return $this->api;
+    }
+
+    /**
+     * Set the Postmark API SDK instance
+     *
+     * @param Api $api
      * @return $this
      */
-    public function api(Api $api = null)
+    public function setApi(Api $api)
     {
-        if ($api !== null) {
-            $this->_api = $api;
-            return $this;
-        }
-        return $this->_api;
+        $this->api = $api;
+
+        return $this;
     }
 
     /**
@@ -59,31 +97,14 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     }
 
     /**
-     * @param array $emails
-     *
-     * @return array
+     * @param Swift_Mime_Message $message
+     * @param string              $mimeType
+     * @return Swift_Mime_MimePart
      */
-    public function convert_email_array(array $emails)
-    {
-        $converted = array();
-
-        foreach ($emails as $email => $name) {
-            $converted [] = $name ? '"' . str_replace('"', '\\"', $name) . "\" <{$email}>" : $email;
-        }
-
-        return $converted;
-    }
-
-    /**
-     * @param \Swift_Mime_Message $message
-     * @param string              $mime_type
-     *
-     * @return \Swift_Mime_MimePart
-     */
-    protected function getMIMEPart(\Swift_Mime_Message $message, $mime_type)
+    protected function getMIMEPart(\Swift_Mime_Message $message, $mimeType)
     {
         foreach ($message->getChildren() as $part) {
-            if (strpos($part->getContentType(), $mime_type) === 0) {
+            if (strpos($part->getContentType(), $mimeType) === 0) {
                 return $part;
             }
         }
@@ -92,31 +113,31 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     /**
      * {@inheritdoc}
      */
-    public function send(\Swift_Mime_Message $message, &$failed_recipients = null)
+    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
     {
-        if ($evt = $this->_eventDispatcher->createSendEvent($this, $message)) {
-            $this->_eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
+        if ($evt = $this->eventDispatcher->createSendEvent($this, $message)) {
+            $this->eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
             if ($evt->bubbleCancelled()) {
                 return 0;
             }
         }
 
         $data = array(
-            'From' => join(',', self::convert_email_array($message->getFrom())),
-            'To' => join(',', self::convert_email_array($message->getTo())),
+            'From' => join(',', static::convertEmailsArray($message->getFrom())),
+            'To' => join(',', static::convertEmailsArray($message->getTo())),
             'Subject' => $message->getSubject(),
         );
 
         if ($cc = $message->getCc()) {
-            $data['Cc'] = join(',', self::convert_email_array($cc));
+            $data['Cc'] = join(',', static::convertEmailsArray($cc));
         }
 
         if ($reply_to = $message->getReplyTo()) {
-            $data['ReplyTo'] = join(',', self::convert_email_array($reply_to));
+            $data['ReplyTo'] = join(',', static::convertEmailsArray($reply_to));
         }
 
         if ($bcc = $message->getBcc()) {
-            $data['Bcc'] = join(',', self::convert_email_array($bcc));
+            $data['Bcc'] = join(',', static::convertEmailsArray($bcc));
         }
 
         switch ($message->getContentType()) {
@@ -141,7 +162,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             $data['Attachments'] = array();
 
             foreach ($message->getChildren() as $attachment) {
-                if (is_object($attachment) AND $attachment instanceof \Swift_Mime_Attachment) {
+                if (is_object($attachment) and $attachment instanceof \Swift_Mime_Attachment) {
                     $data['Attachments'][] = array(
                         'Name' => $attachment->getFilename(),
                         'Content' => base64_encode($attachment->getBody()),
@@ -155,7 +176,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
 
         if ($evt) {
             $evt->setResult(\Swift_Events_SendEvent::RESULT_SUCCESS);
-            $this->_eventDispatcher->dispatchEvent($evt, 'sendPerformed');
+            $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
         return 1;
@@ -166,6 +187,38 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
      */
     public function registerPlugin(\Swift_Events_EventListener $plugin)
     {
-        $this->_eventDispatcher->bindEventListener($plugin);
+        $this->eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * [DEPRECATED] Get/Set the Postmark API SDK instance
+     *
+     * @deprecated since 0.3.x. Use `getApi` and `setApi` instead.
+     * @param Api $api
+     * @return $this
+     */
+    public function api(Api $api = null)
+    {
+        trigger_error('api is deprecated, use getApi and setApi instead', E_USER_DEPRECATED);
+
+        if ($api !== null) {
+            return $this->setApi($api);
+        }
+
+        return $this->getApi();
+    }
+
+    /**
+     * [DEPRECATED] Convert email dictionary with emails and names
+     * to array of emails with names.
+     *
+     * @deprecated since 0.3.x. Use `Swift_Transport_PostmarkTransport::convertEmailsArray` instead.
+     * @param array $emails
+     * @return array
+     */
+    public function convert_email_array(array $emails)
+    {
+        trigger_error('convert_email_array is deprecated, use convertEmailsArray instead', E_USER_DEPRECATED);
+        return static::convertEmailsArray($emails);
     }
 }

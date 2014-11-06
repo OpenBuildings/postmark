@@ -14,7 +14,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
      */
-    public function test_newInstance()
+    public function testNewInstance()
     {
         $postmarkTransport = Swift_PostmarkTransport::newInstance();
         $this->assertInstanceOf(
@@ -30,11 +30,12 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Openbuildings\Postmark\Swift_PostmarkTransport::__construct
      */
-    public function test_constructor()
+    public function testConstructor()
     {
         $postmarkTransport = Swift_PostmarkTransport::newInstance('token');
-        $this->assertTrue(Swift_DependencyContainer::getInstance()
-            ->has('transport.postmark'));
+        $this->assertTrue(
+            Swift_DependencyContainer::getInstance()->has('transport.postmark')
+        );
 
         $this->assertEquals('token', $postmarkTransport->api()->token());
     }
