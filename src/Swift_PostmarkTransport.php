@@ -33,7 +33,7 @@ class Swift_PostmarkTransport extends Swift_Transport_PostmarkTransport
         );
 
         if ($token) {
-            $this->api(new Api($token));
+            $this->setApi(new Api($token));
         }
     }
 
