@@ -49,19 +49,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::api
-     */
-    public function testApi()
-    {
-        $transportPostmark = $this->getTransportPostmark();
-        $this->assertNull($transportPostmark->api());
-
-        $api = new Api();
-        $transportPostmark->api($api);
-        $this->assertSame($api, $transportPostmark->api());
-    }
-
-    /**
      * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::isStarted
      */
     public function testIsStarted()
@@ -117,19 +104,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             $expectedConvertedEmails,
             Swift_Transport_PostmarkTransport::convertEmailsArray($emails)
-        );
-    }
-
-    /**
-     * @dataProvider dataConvertEmailsArray
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convert_email_array
-     */
-    public function testConvertEmailArrayLegacy(array $emails, $expectedConvertedEmails)
-    {
-        $transportPostmark = $this->getTransportPostmark();
-        $this->assertSame(
-            $expectedConvertedEmails,
-            $transportPostmark->convert_email_array($emails)
         );
     }
 
