@@ -48,37 +48,6 @@ class ApiTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Api::token
-     */
-    public function testTokenLegacy()
-    {
-        $api = new Api();
-        $this->assertNull($api->token());
-
-        $api = new Api('custom token');
-        $this->assertEquals('custom token', $api->token());
-
-        $api->token('another token');
-        $this->assertEquals('another token', $api->token());
-    }
-
-    /**
-     * @covers Openbuildings\Postmark\Api::headers
-     */
-    public function testHeadersLegacy()
-    {
-        $expected = array(
-            'Accept: application/json',
-            'Content-Type: application/json',
-            'X-Postmark-Server-Token: custom token',
-        );
-
-        $api = new Api('custom token');
-
-        $this->assertEquals($expected, $api->headers());
-    }
-
-    /**
      * @covers Openbuildings\Postmark\Api::getHeaders
      */
     public function testGetHeaders()
@@ -102,16 +71,6 @@ class ApiTest extends PHPUnit_Framework_TestCase
         $api = new Api();
         $this->setExpectedException('Exception', 'You must set postmark token');
         $api->getHeaders();
-    }
-
-    /**
-     * @covers Openbuildings\Postmark\Api::headers
-     */
-    public function testHeadersNoTokenException()
-    {
-        $api = new Api();
-        $this->setExpectedException('Exception', 'You must set postmark token');
-        $api->headers();
     }
 
     /**
@@ -239,49 +198,6 @@ class ApiTest extends PHPUnit_Framework_TestCase
 
         $api->setSecure(true);
         $this->assertEquals(Api::SEND_URI_SECURE, $api->getSendUri());
-    }
-
-    /**
-     * @covers Openbuildings\Postmark\Api::is_secure
-     */
-    public function testIsSecureLegacy()
-    {
-        $api = new Api();
-        $this->assertTrue($api->is_secure());
-
-        $api->set_secure(false);
-        $this->assertFalse($api->is_secure());
-
-        $api->set_secure(true);
-        $this->assertTrue($api->is_secure());
-    }
-
-    /**
-     * @covers Openbuildings\Postmark\Api::set_secure
-     */
-    public function testSetSecureLegacy()
-    {
-        $api = new Api();
-        $this->assertSame($api, $api->set_secure(false));
-        $this->assertFalse($api->is_secure());
-
-        $api->set_secure(true);
-        $this->assertTrue($api->is_secure());
-    }
-
-    /**
-     * @covers Openbuildings\Postmark\Api::get_send_uri
-     */
-    public function testGetSendUriLegacy()
-    {
-        $api = new Api();
-        $this->assertEquals(Api::SEND_URI_SECURE, $api->get_send_uri());
-
-        $api->set_secure(false);
-        $this->assertEquals(Api::SEND_URI, $api->get_send_uri());
-
-        $api->set_secure(true);
-        $this->assertEquals(Api::SEND_URI_SECURE, $api->get_send_uri());
     }
 
     /**

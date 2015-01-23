@@ -198,36 +198,4 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     {
         $this->eventDispatcher->bindEventListener($plugin);
     }
-
-    /**
-     * [DEPRECATED] Get/Set the Postmark API SDK instance
-     *
-     * @deprecated since 0.3.x. Use `getApi` and `setApi` instead.
-     * @param Api $api
-     * @return $this
-     */
-    public function api(Api $api = null)
-    {
-        trigger_error('api is deprecated, use getApi and setApi instead', E_USER_DEPRECATED);
-
-        if ($api !== null) {
-            return $this->setApi($api);
-        }
-
-        return $this->getApi();
-    }
-
-    /**
-     * [DEPRECATED] Convert email dictionary with emails and names
-     * to array of emails with names.
-     *
-     * @deprecated since 0.3.x. Use `Swift_Transport_PostmarkTransport::convertEmailsArray` instead.
-     * @param array $emails
-     * @return array
-     */
-    public function convert_email_array(array $emails)
-    {
-        trigger_error('convert_email_array is deprecated, use convertEmailsArray instead', E_USER_DEPRECATED);
-        return static::convertEmailsArray($emails);
-    }
 }
