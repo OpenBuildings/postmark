@@ -151,14 +151,14 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             }
         }
 
-        $this->api()->send($data);
+        $response = $this->api()->send($data);
 
         if ($evt) {
             $evt->setResult(\Swift_Events_SendEvent::RESULT_SUCCESS);
             $this->_eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
-        return 1;
+        return $response;
     }
 
     /**
