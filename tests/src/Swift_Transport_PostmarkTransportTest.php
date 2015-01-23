@@ -10,6 +10,7 @@ use Swift_Message;
 use Swift_Attachment;
 use PHPUnit_Framework_TestCase;
 use Swift_DependencyContainer;
+use Swift_Events_ResponseEvent;
 use Swift_Events_SimpleEventDispatcher;
 
 /**
@@ -139,11 +140,40 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testSend()
     {
-        $transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
-        $this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->getApi());
+        $eventDispatcherMock = $this->getMock(
+            'Swift_Events_SimpleEventDispatcher',
+            array(
+                'createResponseEvent',
+                'dispatchEvent'
+            )
+        );
+
+        $transport = new Swift_Transport_PostmarkTransport(
+            $eventDispatcherMock
+        );
+
+        $responseEvent = new Swift_Events_ResponseEvent($transport, array(
+            'MessageID' => '123456',
+        ), true);
+
+        $eventDispatcherMock
+            ->expects($this->once())
+            ->method('createResponseEvent')
+            ->with(
+                $transport,
+                '123456',
+                true
+            )
+            ->will($this->returnValue($responseEvent));
+
+        $eventDispatcherMock
+            ->expects($this->at(3))
+            ->method('dispatchEvent')
+            ->with($responseEvent, 'responseReceived');
 
         $api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
         $transport->setApi($api);
+
         $mailer = Swift_Mailer::newInstance($transport);
 
         $api->expects($this->at(0))
@@ -157,7 +187,10 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
                         'TextBody' => 'Test Email',
                     )
                 )
-            );
+            )
+            ->will($this->returnValue(array(
+                'MessageID' => '123456',
+            )));
 
         $api->expects($this->at(1))
             ->method('send')
@@ -314,6 +347,47 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
 
         $result = $transportPostmark->send($message);
         $this->assertSame(0, $result);
+    }
+
+    /**
+     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
+     */
+    public function testResponseEventFires()
+    {
+        $eventDispatcher = $this->getMock('Swift_Events_SimpleEventDispatcher');
+        $transport = new Swift_Transport_PostmarkTransport($eventDispatcher);
+        $event = new Swift_Events_ResponseEvent($transport, 1234, true);
+        $api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
+        $transport->setApi($api);
+
+        $api->expects($this->at(0))
+            ->method('send')
+            ->will($this->returnValue(array('MessageID' => 1234)));
+
+        $eventDispatcher->expects($this->once())
+            ->method('createResponseEvent')
+            ->with($this->equalTo($transport), $this->equalTo('1234'), $this->equalTo(true))
+            ->will($this->returnValue($event));
+
+        $eventDispatcher->expects($this->once())
+            ->method('dispatchEvent')
+            ->with($this->equalTo($event), $this->equalTo('responseReceived'));
+
+        $api->expects($this->at(1))
+            ->method('send')
+            ->will($this->returnValue(array()));
+
+        $message = Swift_Message::newInstance();
+        $message->setFrom('test12@example.com');
+        $message->setTo('test13@example.com');
+        $message->setSubject('Test Big');
+        $message->setBody('Text Body');
+
+        // Response Event should fire.
+        $transport->send($message);
+
+        // Response Event should not fire.
+        $transport->send($message);
     }
 
     /**
