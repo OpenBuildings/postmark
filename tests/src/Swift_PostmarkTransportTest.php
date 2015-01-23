@@ -28,6 +28,22 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
+     */
+    public function testNewInstanceWithToken()
+    {
+        $postmarkTransport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
+        $this->assertInstanceOf(
+            'Openbuildings\Postmark\Swift_PostmarkTransport',
+            $postmarkTransport
+        );
+        $this->assertInstanceOf('Openbuildings\Postmark\Api', $postmarkTransport->getApi());
+
+        $postmarkTransport = Swift_PostmarkTransport::newInstance('token');
+        $this->assertEquals('token', $postmarkTransport->getApi()->getToken());
+    }
+
+    /**
      * @covers Openbuildings\Postmark\Swift_PostmarkTransport::__construct
      */
     public function testConstructor()

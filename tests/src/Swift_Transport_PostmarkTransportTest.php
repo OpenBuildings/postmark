@@ -10,6 +10,7 @@ use Swift_Message;
 use Swift_Attachment;
 use PHPUnit_Framework_TestCase;
 use Swift_DependencyContainer;
+use Swift_Events_ResponseEvent;
 use Swift_Events_SimpleEventDispatcher;
 
 /**
@@ -139,11 +140,40 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testSend()
     {
-        $transport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
-        $this->assertInstanceOf('Openbuildings\Postmark\Api', $transport->getApi());
+        $eventDispatcherMock = $this->getMock(
+            'Swift_Events_SimpleEventDispatcher',
+            array(
+                'createResponseEvent',
+                'dispatchEvent'
+            )
+        );
+
+        $transport = new Swift_Transport_PostmarkTransport(
+            $eventDispatcherMock
+        );
+
+        $responseEvent = new Swift_Events_ResponseEvent($transport, array(
+            'MessageID' => '123456',
+        ), true);
+
+        $eventDispatcherMock
+            ->expects($this->once())
+            ->method('createResponseEvent')
+            ->with(
+                $transport,
+                '123456',
+                true
+            )
+            ->will($this->returnValue($responseEvent));
+
+        $eventDispatcherMock
+            ->expects($this->at(3))
+            ->method('dispatchEvent')
+            ->with($responseEvent, 'responseReceived');
 
         $api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
         $transport->setApi($api);
+
         $mailer = Swift_Mailer::newInstance($transport);
 
         $api->expects($this->at(0))
@@ -157,7 +187,10 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
                         'TextBody' => 'Test Email',
                     )
                 )
-            );
+            )
+            ->will($this->returnValue(array(
+                'MessageID' => '123456',
+            )));
 
         $api->expects($this->at(1))
             ->method('send')
