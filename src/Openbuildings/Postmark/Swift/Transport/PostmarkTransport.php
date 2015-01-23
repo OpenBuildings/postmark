@@ -141,7 +141,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             $data['Attachments'] = array();
 
             foreach ($message->getChildren() as $attachment) {
-                if (is_object($attachment) AND $attachment instanceof \Swift_Mime_Attachment) {
+                if (is_object($attachment) and $attachment instanceof \Swift_Mime_Attachment) {
                     $data['Attachments'][] = array(
                         'Name' => $attachment->getFilename(),
                         'Content' => base64_encode($attachment->getBody()),
