@@ -141,7 +141,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             $data['Attachments'] = array();
 
             foreach ($message->getChildren() as $attachment) {
-                if (is_object($attachment) AND $attachment instanceof \Swift_Mime_Attachment) {
+                if (is_object($attachment) and $attachment instanceof \Swift_Mime_Attachment) {
                     $data['Attachments'][] = array(
                         'Name' => $attachment->getFilename(),
                         'Content' => base64_encode($attachment->getBody()),
@@ -158,7 +158,16 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             $this->_eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
-        return $response;
+        if (isset($response['MessageID'])) {
+            $response_event = $this->_eventDispatcher->createResponseEvent(
+                $this,
+                $response['MessageID'],
+                true
+            );
+            $this->_eventDispatcher->dispatchEvent($response_event, 'responseReceived');
+        }
+
+        return 1;
     }
 
     /**
