@@ -7,6 +7,12 @@ php:
   - 5.6
   - hhvm
 
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 notifications:
   email: false
   slack:
