@@ -18,5 +18,10 @@
     },
     "autoload": {
         "psr-4": {"Openbuildings\\Postmark\\": "src/"}
+    },
+    "suggest": {
+        "openbuildings/swiftmailer-css-inliner": "Inline the CSS of your HTML emails",
+        "openbuildings/swiftmailer-filter": "Whitelist or blacklist domains or emails from To, Cc and Bcc",
+        "openbuildings/swiftmailer-google-campaign": "Append to all email links Google UTM campaign parameters"
     }
 }
