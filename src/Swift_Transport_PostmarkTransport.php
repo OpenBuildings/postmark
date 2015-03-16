@@ -166,7 +166,8 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
                     $data['Attachments'][] = array(
                         'Name' => $attachment->getFilename(),
                         'Content' => base64_encode($attachment->getBody()),
-                        'ContentType' => $attachment->getContentType()
+                        'ContentType' => $attachment->getContentType(),
+                        'ContentID' => sprintf('cid:%s', $attachment->getId())
                     );
                 }
             }
