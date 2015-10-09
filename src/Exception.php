@@ -4,8 +4,9 @@ namespace Openbuildings\Postmark;
 
 /**
  * Postmark API exception like sending email to inactive emails
+ * Extends SwiftTransport Exception to be caught by SwiftMailer exception handling
  */
-class Exception extends \Exception
+class Exception extends \Swift_TransportException
 {
     const BAD_OR_MISSING_API_TOKEN                                  =  10;
     const INVALID_EMAIL_REQUEST                                     = 300;
