@@ -4,8 +4,9 @@ namespace Openbuildings\Postmark;
 
 /**
  * Postmark API exception like sending email to inactive emails
+ * Extends SwiftTransport Exception to be caught by SwiftMailer exception handling
  */
-class Exception extends \Exception
+class Exception extends \Swift_TransportException
 {
     const BAD_OR_MISSING_API_TOKEN                                  =  10;
     const INVALID_EMAIL_REQUEST                                     = 300;
@@ -44,4 +45,16 @@ class Exception extends \Exception
     const TAG_WITH_THIS_NAME_ALREADY_HAS_TRIGGER_ASSOCIATED_WITH_IT = 803;
     const NAME_TO_MATCH_IS_MISSING                                  = 808;
     const NO_TRIGGER_DATA_RECEIVED                                  = 809;
+
+    /**
+     * Create a new Exception with $message and $code
+     *
+     * @param string $message
+     */
+    public function __construct($message, $code = 0)
+    {
+        parent::__construct($message);
+
+        $this->code = $code;
+    }
 }
