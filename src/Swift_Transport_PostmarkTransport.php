@@ -15,12 +15,12 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     /**
      * The Postmark API SDK instance.
      *
-     * @var Openbuildings\Postmark\Api
+     * @var \Openbuildings\Postmark\Api
      */
     protected $api;
 
     /**
-     * @var Swift_Events_EventDispatcher
+     * @var \Swift_Events_EventDispatcher
      */
     protected $eventDispatcher;
 
@@ -52,7 +52,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     /**
      * Get the Postmark API SDK instance
      *
-     * @return Openbuildings\Postmark\Api
+     * @return \Openbuildings\Postmark\Api
      */
     public function getApi()
     {
@@ -97,9 +97,9 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     }
 
     /**
-     * @param Swift_Mime_Message $message
+     * @param \Swift_Mime_Message $message
      * @param string              $mimeType
-     * @return Swift_Mime_MimePart
+     * @return \Swift_Mime_MimePart|null
      */
     protected function getMIMEPart(\Swift_Mime_Message $message, $mimeType)
     {
@@ -108,6 +108,8 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
                 return $part;
             }
         }
+
+        return null;
     }
 
     /**

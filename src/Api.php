@@ -58,9 +58,8 @@ class Api
 
     /**
      * Get the headers needed to be sent to the Postmark API.
-     *
      * @return array of header strings
-     * @throws Exception If the Postmark API token is not yet set.
+     * @throws \Exception
      */
     public function getHeaders()
     {
@@ -81,8 +80,8 @@ class Api
      *
      * @param array $data
      * @return array Postmark API response.
-     * @throws Exception If API request failed or JSON returned was invalid.
-     * @throws Openbuildings\Postmark\Exception If Postmark API returned an error.
+     * @throws \Exception If API request failed or JSON returned was invalid.
+     * @throws \Openbuildings\Postmark\Exception If Postmark API returned an error.
      * @uses Openbuildings\Postmark\Api::getSendUri to determine the request URI
      * @uses Openbuildings\Postmark\Api::getHeaders for the request headers
      */
