@@ -2,9 +2,6 @@
 
 namespace Openbuildings\Postmark;
 
-// Make it obvious when we're throwing a custom exception
-use Openbuildings\Postmark\Exception as OBPMException;
-
 /**
  * Class for manupulating a server
  *
@@ -26,6 +23,11 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
      * @var \Swift_Events_EventDispatcher
      */
     protected $eventDispatcher;
+
+    /**
+     * @var \Swift_Mime_Message
+     */
+    protected $message;
 
     public function __construct(\Swift_Events_EventDispatcher $eventDispatcher)
     {
@@ -73,6 +75,15 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
         $this->api = $api;
 
         return $this;
+    }
+
+    /**
+     * Get the message currently being processed
+     *
+     * @return \Swift_Mime_Message|null
+     */
+    public function getMessage() {
+        return $this->message;
     }
 
     /**
@@ -181,14 +192,27 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
         try {
             $response = $this->getApi()->send($data);
         } catch (\Exception $e) {
-            //Something went wrong. Trigger Swift's exception event.
-            if ($e instanceof OBPMException) {
-                $evt->setResult($e->getCode());
+            // Something went wrong. Trigger Swift's exception event.
+            if ($e instanceof \Swift_TransportException) {
+                $exceptionToHandle = $e;
             } else {
-                $evt->setResult(\Swift_Events_SendEvent::RESULT_FAILED);
+                $exceptionToHandle = new \Swift_TransportException(
+                    $e->getMessage(),
+                    0,
+                    $e
+                );
             }
 
-            $this->eventDispatcher->dispatchEvent($evt, 'exceptionThrown');
+            $this->message = $message;
+
+            $exceptionEvent = $this->eventDispatcher->createTransportExceptionEvent(
+                $this,
+                $exceptionToHandle
+            );
+            $this->eventDispatcher->dispatchEvent($exceptionEvent, 'exceptionThrown');
+
+            // Clear the message because we don't want it hanging around in the class because we're done with it.
+            $this->message = null;
 
             // Pass along the original exception.
             throw $e;
