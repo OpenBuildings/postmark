@@ -2,6 +2,9 @@
 
 namespace Openbuildings\Postmark;
 
+// Make it obvious when we're throwing a custom exception
+use Openbuildings\Postmark\Exception as OBPMException;
+
 /**
  * Class for manupulating a server
  *
@@ -175,7 +178,21 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             }
         }
 
-        $response = $this->getApi()->send($data);
+        try {
+            $response = $this->getApi()->send($data);
+        } catch (\Exception $e) {
+            //Something went wrong. Trigger Swift's exception event.
+            if ($e instanceof OBPMException) {
+                $evt->setResult($e->getCode());
+            } else {
+                $evt->setResult(\Swift_Events_SendEvent::RESULT_FAILED);
+            }
+
+            $this->eventDispatcher->dispatchEvent($evt, 'exceptionThrown');
+
+            // Pass along the original exception.
+            throw $e;
+        }
 
         if ($evt) {
             $evt->setResult(\Swift_Events_SendEvent::RESULT_SUCCESS);

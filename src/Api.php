@@ -2,6 +2,9 @@
 
 namespace Openbuildings\Postmark;
 
+// Make it obvious when we're throwing a custom exception
+use Openbuildings\Postmark\Exception as OBPMException;
+
 /**
  * Class for manupulating a server
  *
@@ -119,7 +122,7 @@ class Api
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         if ($responseCode != 200) {
-            throw new Exception(
+            throw new OBPMException(
                 sprintf('Postmark delivery failed: %s', $response['Message']),
                 (int) $response['ErrorCode']
             );
