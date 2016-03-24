@@ -84,7 +84,7 @@ class Api
      * @param array $data
      * @return array Postmark API response.
      * @throws \Exception If API request failed or JSON returned was invalid.
-     * @throws \Openbuildings\Postmark\Exception If Postmark API returned an error.
+     * @throws OBPMException If Postmark API returned an error.
      * @uses Openbuildings\Postmark\Api::getSendUri to determine the request URI
      * @uses Openbuildings\Postmark\Api::getHeaders for the request headers
      */
