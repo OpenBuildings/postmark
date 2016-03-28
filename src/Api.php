@@ -2,6 +2,9 @@
 
 namespace Openbuildings\Postmark;
 
+// Make it obvious when we're throwing a custom exception
+use Openbuildings\Postmark\Exception as PostmarkException;
+
 /**
  * Class for manupulating a server
  *
@@ -58,9 +61,8 @@ class Api
 
     /**
      * Get the headers needed to be sent to the Postmark API.
-     *
      * @return array of header strings
-     * @throws Exception If the Postmark API token is not yet set.
+     * @throws \Exception
      */
     public function getHeaders()
     {
@@ -81,8 +83,8 @@ class Api
      *
      * @param array $data
      * @return array Postmark API response.
-     * @throws Exception If API request failed or JSON returned was invalid.
-     * @throws Openbuildings\Postmark\Exception If Postmark API returned an error.
+     * @throws \Exception If API request failed or JSON returned was invalid.
+     * @throws PostmarkException If Postmark API returned an error.
      * @uses Openbuildings\Postmark\Api::getSendUri to determine the request URI
      * @uses Openbuildings\Postmark\Api::getHeaders for the request headers
      */
@@ -120,7 +122,7 @@ class Api
         $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         if ($responseCode != 200) {
-            throw new Exception(
+            throw new PostmarkException(
                 sprintf('Postmark delivery failed: %s', $response['Message']),
                 (int) $response['ErrorCode']
             );
