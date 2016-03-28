@@ -15,14 +15,19 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     /**
      * The Postmark API SDK instance.
      *
-     * @var Openbuildings\Postmark\Api
+     * @var \Openbuildings\Postmark\Api
      */
     protected $api;
 
     /**
-     * @var Swift_Events_EventDispatcher
+     * @var \Swift_Events_EventDispatcher
      */
     protected $eventDispatcher;
+
+    /**
+     * @var \Swift_Mime_Message
+     */
+    protected $message;
 
     public function __construct(\Swift_Events_EventDispatcher $eventDispatcher)
     {
@@ -52,7 +57,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     /**
      * Get the Postmark API SDK instance
      *
-     * @return Openbuildings\Postmark\Api
+     * @return \Openbuildings\Postmark\Api
      */
     public function getApi()
     {
@@ -70,6 +75,15 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
         $this->api = $api;
 
         return $this;
+    }
+
+    /**
+     * Get the message currently being processed
+     *
+     * @return \Swift_Mime_Message|null
+     */
+    public function getMessage() {
+        return $this->message;
     }
 
     /**
@@ -97,9 +111,9 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     }
 
     /**
-     * @param Swift_Mime_Message $message
+     * @param \Swift_Mime_Message $message
      * @param string              $mimeType
-     * @return Swift_Mime_MimePart
+     * @return \Swift_Mime_MimePart|null
      */
     protected function getMIMEPart(\Swift_Mime_Message $message, $mimeType)
     {
@@ -108,6 +122,8 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
                 return $part;
             }
         }
+
+        return null;
     }
 
     /**
@@ -173,7 +189,34 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             }
         }
 
-        $response = $this->getApi()->send($data);
+        try {
+            $response = $this->getApi()->send($data);
+        } catch (\Exception $e) {
+            // Something went wrong. Trigger Swift's exception event.
+            if ($e instanceof \Swift_TransportException) {
+                $exceptionToHandle = $e;
+            } else {
+                $exceptionToHandle = new \Swift_TransportException(
+                    $e->getMessage(),
+                    0,
+                    $e
+                );
+            }
+
+            $this->message = $message;
+
+            $exceptionEvent = $this->eventDispatcher->createTransportExceptionEvent(
+                $this,
+                $exceptionToHandle
+            );
+            $this->eventDispatcher->dispatchEvent($exceptionEvent, 'exceptionThrown');
+
+            // Clear the message because we don't want it hanging around in the class because we're done with it.
+            $this->message = null;
+
+            // Pass along the original exception.
+            throw $e;
+        }
 
         if ($evt) {
             $evt->setResult(\Swift_Events_SendEvent::RESULT_SUCCESS);
