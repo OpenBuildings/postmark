@@ -158,6 +158,11 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
             $data['HtmlBody'] = $html->getBody();
         }
 
+        $tag = $message->getId();
+        if (strlen($tag)) {
+            $data['Tag'] = $tag;
+        }
+
         if ($message->getChildren()) {
             $data['Attachments'] = array();
 
