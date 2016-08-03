@@ -11,13 +11,17 @@
     ],
     "require" : {
         "php": ">=5.3.2",
-        "lib-curl": "*"
+        "lib-curl": "*",
+        "swiftmailer/swiftmailer": "^5.0"
     },
     "require-dev" : {
-        "swiftmailer/swiftmailer": "~5.0"
+        "phpunit/phpunit": ">=4.0,<6.0"
     },
     "autoload": {
         "psr-4": {"Openbuildings\\Postmark\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"Openbuildings\\Postmark\\Test\\": "tests/src/"}
     },
     "suggest": {
         "openbuildings/swiftmailer-css-inliner": "Inline the CSS of your HTML emails",
