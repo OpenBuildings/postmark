@@ -1,35 +1,50 @@
 language: php
 
+sudo: false
+
 php:
   - 5.3
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
   - hhvm
 
-sudo: false
+env:
+  - DEPS=normal
+  - DEPS=highest
+  - DEPS=lowest
+
+matrix:
+  fast_finish: true
+  exclude:
+    - php: hhvm
+      env: DEPS=lowest
 
 cache:
   directories:
     - $HOME/.composer/cache
+
+branches:
+  only:
+    - master
+    - /\d+\.x/
+    - /\d+\.\d+\.x/
 
 notifications:
   email: false
   slack:
     secure: jihdAhibtEKmK6HNzM5QAkLNYZZ6MAk/c2PTauUjht3FWTvj/9hqSrfeJ4WX2ECfhNfgYEtMVd34EULFqlyWOOury2+FVkxSfN9SLt92EhvCwIMS5ITONOASSm13DtRJUTA+ctj/ndeQq1Iwox+LcT4o6Z8ncSekqD6RQOPgAA8=
 
-before_install:
-  - composer selfupdate
+before_install: composer selfupdate --preview
 
 install:
-  - composer install --no-interaction
+  - if [ "$DEPS" = "normal" ]; then composer install --no-interaction; fi;
+  - if [ "$DEPS" = "highest" ]; then composer update --no-interaction; fi;
+  - if [ "$DEPS" = "lowest" ]; then composer update --no-interaction --prefer-lowest --prefer-stable; fi;
 
-before_script:
-  - mkdir -p build/logs
-
-script:
-  - phpunit --coverage-clover build/logs/clover.xml
+script: vendor/bin/phpunit --coverage-clover clover.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
+  - php ocular.phar code-coverage:upload --format=php-clover clover.xml
