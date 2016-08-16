@@ -114,13 +114,11 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testSend()
     {
-        $eventDispatcherMock = $this->getMock(
-            'Swift_Events_SimpleEventDispatcher',
-            array(
-                'createResponseEvent',
-                'dispatchEvent'
-            )
-        );
+        $eventDispatcherMock = $this->getMockBuilder(
+            'Swift_Events_SimpleEventDispatcher'
+        )
+            ->setMethods(array('createResponseEvent', 'dispatchEvent'))
+            ->getMock();
 
         $transport = new Swift_Transport_PostmarkTransport(
             $eventDispatcherMock
@@ -145,7 +143,10 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
             ->method('dispatchEvent')
             ->with($responseEvent, 'responseReceived');
 
-        $api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
+        $api = $this->getMockBuilder('Openbuildings\Postmark\Api')
+            ->setConstructorArgs(array('POSTMARK_API_TEST'))
+            ->getMock();
+
         $transport->setApi($api);
 
         $mailer = Swift_Mailer::newInstance($transport);
@@ -273,7 +274,9 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
 
         $transport->stop();
 
-        $transport->registerPlugin($this->getMock('Swift_Events_EventListener'));
+        $transport->registerPlugin(
+            $this->getMockBuilder('Swift_Events_EventListener')->getMock()
+        );
     }
 
     /**
@@ -281,40 +284,29 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testSendEventCancelled()
     {
-        $event_dispatcher_mock = $this->getMock(
-            'Swift_Events_SimpleEventDispatcher',
-            array(
-                'createSendEvent',
-                'dispatchEvent'
-            )
-        );
+        $event_dispatcher_mock = $this->getMockBuilder(
+            'Swift_Events_SimpleEventDispatcher'
+        )
+            ->setMethods(array('createSendEvent', 'dispatchEvent'))
+            ->getMock();
 
         $transportPostmark = new Swift_Transport_PostmarkTransport(
             $event_dispatcher_mock
         );
 
-        $send_event_mock = $this->getMock(
-            'Swift_Events_SendEvent',
-            array(
-                'bubbleCancelled'
-            ),
-            array(),
-            '',
-            false
-        );
+        $send_event_mock = $this->getMockBuilder('Swift_Events_SendEvent')
+            ->setMethods(array('bubbleCancelled'))
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $send_event_mock
             ->expects($this->once())
             ->method('bubbleCancelled')
             ->will($this->returnValue(true));
 
-        $message = $this->getMock(
-            'Swift_Mime_SimpleMessage',
-            array(),
-            array(),
-            '',
-            false
-        );
+        $message = $this->getMockBuilder('Swift_Mime_SimpleMessage')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $event_dispatcher_mock
             ->expects($this->once())
@@ -334,10 +326,15 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testResponseEventFires()
     {
-        $eventDispatcher = $this->getMock('Swift_Events_SimpleEventDispatcher');
+        $eventDispatcher = $this->getMockBuilder('Swift_Events_SimpleEventDispatcher')
+            ->getMock();
+
         $transport = new Swift_Transport_PostmarkTransport($eventDispatcher);
         $event = new Swift_Events_ResponseEvent($transport, 1234, true);
-        $api = $this->getMock('Openbuildings\Postmark\Api', array(), array('POSTMARK_API_TEST'));
+        $api = $this->getMockBuilder('Openbuildings\Postmark\Api')
+            ->setConstructorArgs(array('POSTMARK_API_TEST'))
+            ->getMock();
+
         $transport->setApi($api);
 
         $api->expects($this->at(0))
@@ -376,14 +373,14 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
      */
     public function testRegisterPlugin()
     {
-        $event_dispatcher = $this->getMock(
-            'Swift_Events_SimpleEventDispatcher',
-            array(
-                'bindEventListener'
-            )
-        );
+        $event_dispatcher = $this->getMockBuilder(
+            'Swift_Events_SimpleEventDispatcher'
+        )
+            ->setMethods(array('bindEventListener'))
+            ->getMock();
 
-        $event_listener = $this->getMock('Swift_Plugins_MessageLogger');
+        $event_listener = $this->getMockBuilder('Swift_Plugins_MessageLogger')
+            ->getMock();
 
         $event_dispatcher
             ->expects($this->once())

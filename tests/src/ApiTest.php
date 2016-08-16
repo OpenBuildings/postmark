@@ -205,15 +205,10 @@ class ApiTest extends PHPUnit_Framework_TestCase
      */
     public function testSendWrongJson()
     {
-        $apiMock = $this->getMock(
-            'Openbuildings\Postmark\Api',
-            array(
-                'getSendUri'
-            ),
-            array(
-                'POSTMARK_API_TEST'
-            )
-        );
+        $apiMock = $this->getMockBuilder('Openbuildings\Postmark\Api')
+            ->setMethods(array('getSendUri'))
+            ->setConstructorArgs(array('POSTMARK_API_TEST'))
+            ->getMock();
 
         $pathToWrongJson = 'file://'.realpath(__DIR__.'/../test_data/wrong-json.json');
 
