@@ -12,6 +12,7 @@ use PHPUnit_Framework_TestCase;
 use Swift_DependencyContainer;
 use Swift_Events_ResponseEvent;
 use Swift_Events_SimpleEventDispatcher;
+use Swift_Image;
 
 /**
  * @group   swift.postmark-transport
@@ -180,9 +181,8 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
                 )
             );
 
-        $attachment1 = Swift_Attachment::fromPath(__DIR__ . '/../test_data/logo_black.png');
-        $attachment1->setDisposition('inline');
-        $attachment1->setId('test@example.com');
+        $embeddedImage = Swift_Image::fromPath(__DIR__ . '/../test_data/logo_black.png');
+        $embeddedImage->setId('test@example.com');
 
         $api->expects($this->at(2))
             ->method('send')
@@ -196,21 +196,21 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
                         'ReplyTo' => '"Tom Smith" <test18@example.com>',
                         'Subject' => 'Test Big',
                         'TextBody' => 'Text Part',
-                        'HtmlBody' => 'HTML Part',
+                        'HtmlBody' => 'HTML Part with an embedded image: <img src="cid:' . $embeddedImage->getId() . '">',
                         'Attachments' => array(
                             array(
                                 'Name' => 'logo_black.png',
                                 'Content' => 'iVBORw0KGgoAAAANSUhEUgAAAHsAAAASCAYAAAB7PKHtAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAyLzcvMTOGU1gaAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAA+ZJREFUaIHtmeF12zYQx3/W83drA6kTRJkg7ATWBqUniDJB6AmiTlB6gsoThNmA2YDeQJmg/XDAI3S8A0G7TZ22//fwLIL3B+6Aw90RvsJGDeyBHbAJfV+BATgBrZLfAcfkuTVkLOR4dWgeBqAP+gzq3TGM7aFPuOcZblWgq4VOzXdw5LaInVWY4yb0f0HsatVYFv8Q+G8Ut8vpuAtCf8y0AXGGiEq9bzLKpcjxmgI9vPm6Qt5Z2WFxPV3P5B0qle0cmVIbe2euuoA7GDYWEXWrArdS/Y23Ago5XrNQl/TUdQu5+wzX0zUu5NqxbW6zl+rYK76lT27D19eBqEMUwFPoi5PsEYeIYebBMeLvwgOX4XrPGLYA3iP6pjIR98nvdeBukr4jEtKXYoOEycnJmUELvFN9D4xpJer4S3j3xHiwInRaeGAM2XsubaxJ0lXHpSe02B67xs4hleI3BtdCjteod5XBPzj8TvVbODnje1yta9qsfOydbD3O2bENJB932CH87Iyf4oA6xDs1+YAfmiL0+wp70eeQ4zXYm6H1sBa1w96wFHtnbo+rddVNb4i32drJvMJtDkv3jBXTENQwrVA15t5/L7xEj5fa8KSeTxQsOHCrxtDpsxRfkt8bZMOP+FGCFVOPfE7u+qdQq+fuO3FB0tlj8hzzdw4la30MulhNf/qluEHqls/IaT+hbLxm6o2v5dRq6IWqmIZAz1Er9VwzFj8A33hesVkHXiwUb5HI2DjyJWu9Y1q8WWiD7Hvn/W1oh6Bnf+0IvkZ8mnn/yPTzJOLzDLdZrI3gzLjh8SvlI+WOUxL2c4gFWIOk4xtD5k3QZ7syFFv6GfEa8Ej+ti2He56fN8G+HfMiTKeeK0OmDTrFNocBsX0NvAU+ILedKW6CzKQq1QqVoMKubF/Ca8hXvwOyMJUxbjfD7ZEN3hZwS3Ql6OLN1yVyvXpn6Z/iuXtTa+4K8cK0snxH/nOgDgq/NAQtxc/AVdK2jCF0Dleq7RAbh79QvwPTE2VBR5EW2+nmsEZs9yJxqztW4a/e3E+IE6RF0T70/caYBzxsEY/1Wu5O+UdFzN/fZuRaLp1igxyehnHT4w1alxnnhBzM34NcrfjaqS7GasmHPqtVgVst5HUOr0n0aZy5StAp7hJ43JyuKWp8eyN2XN6AlbZYC+ibw5K2jSc7KllSEIB4751hxP+QQ/PrjEyPOE9J2AdZ73vGkH1ECrG5KBJxBwwr1dkAPyGX6tZAT4ghO8r+X/1fRUn+jv+2vMvIfkU2dcs0ksQC06q+Ix6RCr0FKVZy2DLmgZ7Xe+Hyb0EV/p7x7wxy2CH52uT/Cao6KpIl3Ep0AAAAAElFTkSuQmCC',
                                 'ContentType' => 'image/png',
-                                'ContentID' => 'cid:' . $attachment1->getId()
+                                'ContentID' => 'cid:' . $embeddedImage->getId()
                             ),
                         )
                     )
                 )
             );
 
-        $attachment2 = Swift_Attachment::fromPath(__DIR__ . '/../test_data/logo_black.png');
-        $attachment2->setDisposition('attachment');
+        $attachment = Swift_Attachment::fromPath(__DIR__ . '/../test_data/logo_black.png');
+        $attachment->setDisposition('attachment');
 
         $api->expects($this->at(3))
             ->method('send')
@@ -258,9 +258,8 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $message->setSubject('Test Big');
         $message->setCc(array('test14@example.com' => 'Jane "Panny" Smith', 'test15@example.com'));
         $message->setBcc(array('test16@example.com' => 'Gale Smith', 'test17@example.com' => 'Mark Smith'));
-        $message->addPart('HTML Part', 'text/html');
+        $message->addPart('HTML Part with an embedded image: <img src="'. $message->embed($embeddedImage) .'">', 'text/html');
         $message->addPart('Text Part', 'text/plain');
-        $message->attach($attachment1);
 
         $mailer->send($message);
 
@@ -270,7 +269,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $message->setTo('test13@example.com');
         $message->setSubject('Test Big');
         $message->setBody('Text Body');
-        $message->attach($attachment2);
+        $message->attach($attachment);
 
         $mailer->send($message);
 
