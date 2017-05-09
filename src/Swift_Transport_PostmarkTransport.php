@@ -142,6 +142,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
 
         switch ($message->getContentType()) {
             case 'text/html':
+            case 'multipart/related':
             case 'multipart/alternative':
                 $data['HtmlBody'] = $message->getBody();
                 break;
