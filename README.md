@@ -1,5 +1,7 @@
 # Postmark Transport
 
+[![Join the chat at https://gitter.im/OpenBuildings/postmark](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OpenBuildings/postmark?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/OpenBuildings/postmark.png?branch=master)](https://travis-ci.org/OpenBuildings/postmark)
 [![Latest Stable Version](https://poser.pugx.org/openbuildings/postmark/v/stable.png)](https://packagist.org/packages/openbuildings/postmark)
 
