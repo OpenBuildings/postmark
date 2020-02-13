@@ -5,10 +5,10 @@ namespace Openbuildings\Postmark\Test;
 use Openbuildings\Postmark\Swift_PostmarkTransport;
 use Openbuildings\Postmark\Api;
 use Openbuildings\Postmark\Swift_Transport_PostmarkTransport;
+use PHPUnit\Framework\TestCase;
 use Swift_Mailer;
 use Swift_Message;
 use Swift_Attachment;
-use PHPUnit_Framework_TestCase;
 use Swift_DependencyContainer;
 use Swift_Events_ResponseEvent;
 use Swift_Events_SimpleEventDispatcher;
@@ -17,7 +17,7 @@ use Swift_Image;
 /**
  * @group   swift.postmark-transport
  */
-class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
+class Swift_Transport_PostmarkTransportTest extends TestCase
 {
     public function getTransportPostmark()
     {
@@ -27,7 +27,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getApi
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getApi
      */
     public function testGetApi()
     {
@@ -40,7 +40,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::setApi
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::setApi
      */
     public function testSetApi()
     {
@@ -51,7 +51,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::isStarted
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::isStarted
      */
     public function testIsStarted()
     {
@@ -59,7 +59,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::start
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::start
      */
     public function testStart()
     {
@@ -67,7 +67,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::stop
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::stop
      */
     public function testStop()
     {
@@ -98,7 +98,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataConvertEmailsArray
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convertEmailsArray
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convertEmailsArray
      */
     public function testConvertEmailsArray(array $emails, $expectedConvertedEmails)
     {
@@ -110,8 +110,8 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getMIMEPart
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getMIMEPart
      */
     public function testSend()
     {
@@ -281,7 +281,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
      */
     public function testSendEventCancelled()
     {
@@ -323,7 +323,7 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
      */
     public function testResponseEventFires()
     {
@@ -369,8 +369,8 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::__construct
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::registerPlugin
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::__construct
+     * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport::registerPlugin
      */
     public function testRegisterPlugin()
     {

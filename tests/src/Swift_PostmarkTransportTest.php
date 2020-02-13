@@ -3,16 +3,16 @@
 namespace Openbuildings\Postmark\Test;
 
 use Openbuildings\Postmark\Swift_PostmarkTransport;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Swift_DependencyContainer;
 
 /**
  * @group   swift.postmark-transport
  */
-class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
+class Swift_PostmarkTransportTest extends TestCase
 {
     /**
-     * @covers Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
+     * @covers \Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
      */
     public function testNewInstance()
     {
@@ -28,7 +28,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
+     * @covers \Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
      */
     public function testNewInstanceWithToken()
     {
@@ -44,7 +44,7 @@ class Swift_PostmarkTransportTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Openbuildings\Postmark\Swift_PostmarkTransport::__construct
+     * @covers \Openbuildings\Postmark\Swift_PostmarkTransport::__construct
      */
     public function testConstructor()
     {
