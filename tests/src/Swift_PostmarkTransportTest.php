@@ -7,13 +7,11 @@ use PHPUnit\Framework\TestCase;
 use Swift_DependencyContainer;
 
 /**
- * @group   swift.postmark-transport
+ * @covers \Openbuildings\Postmark\Swift_PostmarkTransport
+ * @group swift.postmark-transport
  */
 class Swift_PostmarkTransportTest extends TestCase
 {
-    /**
-     * @covers \Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
-     */
     public function testNewInstance()
     {
         $postmarkTransport = Swift_PostmarkTransport::newInstance();
@@ -27,9 +25,6 @@ class Swift_PostmarkTransportTest extends TestCase
         $this->assertEquals('token', $postmarkTransport->getApi()->getToken());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Swift_PostmarkTransport::newInstance
-     */
     public function testNewInstanceWithToken()
     {
         $postmarkTransport = Swift_PostmarkTransport::newInstance('POSTMARK_API_TEST');
@@ -43,9 +38,6 @@ class Swift_PostmarkTransportTest extends TestCase
         $this->assertEquals('token', $postmarkTransport->getApi()->getToken());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Swift_PostmarkTransport::__construct
-     */
     public function testConstructor()
     {
         $postmarkTransport = Swift_PostmarkTransport::newInstance('token');

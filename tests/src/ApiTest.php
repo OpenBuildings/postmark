@@ -6,13 +6,11 @@ use Openbuildings\Postmark\Api;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group   api
+ * @covers \Openbuildings\Postmark\Api
+ * @group api
  */
 class ApiTest extends TestCase
 {
-    /**
-     * @covers \Openbuildings\Postmark\Api::__construct
-     */
     public function testConstructor()
     {
         $api = new Api();
@@ -22,9 +20,6 @@ class ApiTest extends TestCase
         $this->assertEquals('token', $api->getToken());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::setToken
-     */
     public function testSetToken()
     {
         $api = new Api();
@@ -32,9 +27,6 @@ class ApiTest extends TestCase
         $this->assertEquals('token', $api->getToken());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::getToken
-     */
     public function testGetToken()
     {
         $api = new Api();
@@ -47,9 +39,6 @@ class ApiTest extends TestCase
         $this->assertEquals('another token', $api->getToken());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::getHeaders
-     */
     public function testGetHeaders()
     {
         $expected = array(
@@ -63,9 +52,6 @@ class ApiTest extends TestCase
         $this->assertEquals($expected, $api->getHeaders());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::getHeaders
-     */
     public function testGetHeadersNoTokenException()
     {
         $api = new Api();
@@ -74,9 +60,6 @@ class ApiTest extends TestCase
         $api->getHeaders();
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::send
-     */
     public function testSendWrongEmail()
     {
         $api = new Api('POSTMARK_API_TEST');
@@ -98,9 +81,6 @@ class ApiTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::send
-     */
     public function testSend()
     {
         $api = new Api('POSTMARK_API_TEST');
@@ -154,9 +134,6 @@ class ApiTest extends TestCase
         ));
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::isSecure
-     */
     public function testIsSecure()
     {
         $api = new Api();
@@ -169,9 +146,6 @@ class ApiTest extends TestCase
         $this->assertTrue($api->isSecure());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::setSecure
-     */
     public function testSetSecure()
     {
         $api = new Api();
@@ -182,9 +156,6 @@ class ApiTest extends TestCase
         $this->assertTrue($api->isSecure());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::getSendUri
-     */
     public function testGetSendUri()
     {
         $api = new Api();
@@ -197,9 +168,6 @@ class ApiTest extends TestCase
         $this->assertEquals(Api::SEND_URI_SECURE, $api->getSendUri());
     }
 
-    /**
-     * @covers \Openbuildings\Postmark\Api::send
-     */
     public function testSendWrongJson()
     {
         $apiMock = $this->getMockBuilder('Openbuildings\Postmark\Api')
