@@ -5,19 +5,20 @@ namespace Openbuildings\Postmark\Test;
 use Openbuildings\Postmark\Swift_PostmarkTransport;
 use Openbuildings\Postmark\Api;
 use Openbuildings\Postmark\Swift_Transport_PostmarkTransport;
+use PHPUnit\Framework\TestCase;
 use Swift_Mailer;
 use Swift_Message;
 use Swift_Attachment;
-use PHPUnit_Framework_TestCase;
 use Swift_DependencyContainer;
 use Swift_Events_ResponseEvent;
 use Swift_Events_SimpleEventDispatcher;
 use Swift_Image;
 
 /**
- * @group   swift.postmark-transport
+ * @covers \Openbuildings\Postmark\Swift_Transport_PostmarkTransport
+ * @group swift.postmark-transport
  */
-class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
+class Swift_Transport_PostmarkTransportTest extends TestCase
 {
     public function getTransportPostmark()
     {
@@ -26,9 +27,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getApi
-     */
     public function testGetApi()
     {
         $transportPostmark = $this->getTransportPostmark();
@@ -39,9 +37,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $this->assertSame($api, $transportPostmark->getApi());
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::setApi
-     */
     public function testSetApi()
     {
         $api = new Api();
@@ -50,25 +45,16 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $this->assertSame($api, $transportPostmark->getApi());
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::isStarted
-     */
     public function testIsStarted()
     {
         $this->assertFalse($this->getTransportPostmark()->isStarted());
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::start
-     */
     public function testStart()
     {
         $this->assertFalse($this->getTransportPostmark()->start());
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::stop
-     */
     public function testStop()
     {
         $this->assertFalse($this->getTransportPostmark()->stop());
@@ -98,7 +84,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataConvertEmailsArray
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::convertEmailsArray
      */
     public function testConvertEmailsArray(array $emails, $expectedConvertedEmails)
     {
@@ -109,10 +94,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::getMIMEPart
-     */
     public function testSend()
     {
         $eventDispatcherMock = $this->getMockBuilder(
@@ -280,9 +261,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
-     */
     public function testSendEventCancelled()
     {
         $event_dispatcher_mock = $this->getMockBuilder(
@@ -322,9 +300,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $this->assertSame(0, $result);
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::send
-     */
     public function testResponseEventFires()
     {
         $eventDispatcher = $this->getMockBuilder('Swift_Events_SimpleEventDispatcher')
@@ -368,10 +343,6 @@ class Swift_Transport_PostmarkTransportTest extends PHPUnit_Framework_TestCase
         $transport->send($message);
     }
 
-    /**
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::__construct
-     * @covers Openbuildings\Postmark\Swift_Transport_PostmarkTransport::registerPlugin
-     */
     public function testRegisterPlugin()
     {
         $event_dispatcher = $this->getMockBuilder(
