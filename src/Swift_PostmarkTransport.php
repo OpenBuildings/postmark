@@ -18,8 +18,9 @@ class Swift_PostmarkTransport extends Swift_Transport_PostmarkTransport
      * Create a new PostmarkTransport.
      *
      * @param null|string $token
+     * @param \Swift_Events_EventListener $listener
      */
-    public function __construct($token = null)
+    public function __construct($token = null, \Swift_Events_EventListener $listener = null)
     {
         Swift_DependencyContainer::getInstance()
             ->register('transport.postmark')
@@ -34,6 +35,10 @@ class Swift_PostmarkTransport extends Swift_Transport_PostmarkTransport
 
         if ($token) {
             $this->setApi(new Api($token));
+        }
+
+        if ($listener) {
+            $this->registerPlugin($listener);
         }
     }
 
