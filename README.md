@@ -10,8 +10,8 @@ A full featured postmark transport for Swiftmailer, allowing attachments, html e
 ```php
 $transport = Swift_PostmarkTransport::newInstance('your api key');
 
-$mailer = Swift_Mailer::newInstance($transport);
-$message = Swift_Message::newInstance();
+$mailer = new Swift_Mailer($transport);
+$message = new Swift_Message();
 
 // Add stuff to your message
 $message->setFrom('test@example.com');

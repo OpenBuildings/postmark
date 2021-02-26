@@ -97,11 +97,11 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     }
 
     /**
-     * @param Swift_Mime_Message $message
+     * @param Swift_Mime_SimpleMessage $message
      * @param string              $mimeType
      * @return Swift_Mime_MimePart
      */
-    protected function getMIMEPart(\Swift_Mime_Message $message, $mimeType)
+    protected function getMIMEPart(\Swift_Mime_SimpleMessage $message, $mimeType)
     {
         foreach ($message->getChildren() as $part) {
             if (strpos($part->getContentType(), $mimeType) === 0) {
@@ -113,7 +113,7 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     /**
      * {@inheritdoc}
      */
-    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
+    public function send(\Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
         if ($evt = $this->eventDispatcher->createSendEvent($this, $message)) {
             $this->eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
@@ -204,5 +204,13 @@ class Swift_Transport_PostmarkTransport implements \Swift_Transport
     public function registerPlugin(\Swift_Events_EventListener $plugin)
     {
         $this->eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ping()
+    {
+        return true;
     }
 }

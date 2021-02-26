@@ -131,7 +131,7 @@ class Swift_Transport_PostmarkTransportTest extends TestCase
 
         $transport->setApi($api);
 
-        $mailer = Swift_Mailer::newInstance($transport);
+        $mailer = new Swift_Mailer($transport);
 
         $api->expects($this->at(0))
             ->method('send')
@@ -213,7 +213,7 @@ class Swift_Transport_PostmarkTransportTest extends TestCase
                 )
             );
 
-        $message = Swift_Message::newInstance();
+        $message = new Swift_Message();
 
         $message->setFrom('test@example.com');
         $message->setTo('test2@example.com');
@@ -222,7 +222,7 @@ class Swift_Transport_PostmarkTransportTest extends TestCase
 
         $mailer->send($message);
 
-        $message = Swift_Message::newInstance();
+        $message = new Swift_Message();
 
         $message->setFrom('test@example.com');
         $message->setTo(array('test2@example.com', 'test3@example.com'));
@@ -231,7 +231,7 @@ class Swift_Transport_PostmarkTransportTest extends TestCase
 
         $mailer->send($message);
 
-        $message = Swift_Message::newInstance();
+        $message = new Swift_Message();
 
         $message->setFrom('test12@example.com', 'John Smith');
         $message->setTo('test13@example.com', 'Paul Smith');
@@ -244,7 +244,7 @@ class Swift_Transport_PostmarkTransportTest extends TestCase
 
         $mailer->send($message);
 
-        $message = Swift_Message::newInstance();
+        $message = new Swift_Message();
 
         $message->setFrom('test12@example.com');
         $message->setTo('test13@example.com');
@@ -330,7 +330,7 @@ class Swift_Transport_PostmarkTransportTest extends TestCase
             ->method('send')
             ->will($this->returnValue(array()));
 
-        $message = Swift_Message::newInstance();
+        $message = new Swift_Message();
         $message->setFrom('test12@example.com');
         $message->setTo('test13@example.com');
         $message->setSubject('Test Big');
