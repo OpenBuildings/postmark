@@ -37,7 +37,7 @@ install:
   - if [ "$DEPS" = "highest" ]; then composer update --no-interaction; fi;
   - if [ "$DEPS" = "lowest" ]; then composer update --no-interaction --prefer-lowest --prefer-stable; fi;
 
-script: vendor/bin/phpunit --coverage-clover clover.xml
+script: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover clover.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
